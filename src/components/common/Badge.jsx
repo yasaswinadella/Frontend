@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, AlertCircle, Clock, Sparkles } from 'lucide-react';
 
 export const EvidenceBadge = ({ status = 'self-reported', showIcon = true, size = 'normal' }) => {
   const config = {
@@ -9,9 +9,9 @@ export const EvidenceBadge = ({ status = 'self-reported', showIcon = true, size 
       icon: <ShieldCheck size={size === 'small' ? 12 : 14} />
     },
     'evidence-linked': {
-      label: 'Evidence-Linked',
-      className: 'badge-evidence',
-      icon: <CheckCircle2 size={size === 'small' ? 12 : 14} />
+      label: 'Verification Pending',
+      className: 'badge-pending',
+      icon: <Clock size={size === 'small' ? 12 : 14} />
     },
     'self-reported': {
       label: 'Self-Reported',
@@ -19,8 +19,8 @@ export const EvidenceBadge = ({ status = 'self-reported', showIcon = true, size 
       icon: <AlertCircle size={size === 'small' ? 12 : 14} />
     },
     'under-review': {
-      label: 'Under Review',
-      className: 'badge-review',
+      label: 'Verification Pending',
+      className: 'badge-pending',
       icon: <Clock size={size === 'small' ? 12 : 14} />
     }
   };
@@ -34,10 +34,10 @@ export const EvidenceBadge = ({ status = 'self-reported', showIcon = true, size 
         fontSize: size === 'small' ? '0.7rem' : '0.75rem',
         padding: size === 'small' ? '2px 8px' : '4px 10px'
       }}
-      title={`Evidence Status: ${item.label}`}
+      title={`Trust Status: ${item.label}`}
     >
       {showIcon && item.icon}
-      {item.label}
+      <span>{item.label}</span>
     </span>
   );
 };
@@ -45,17 +45,28 @@ export const EvidenceBadge = ({ status = 'self-reported', showIcon = true, size 
 export const MatchScoreBadge = ({ score = 95, onClick, size = 'normal' }) => {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="match-score-pill"
       style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        backgroundColor: '#EEF2FF',
+        color: '#4F46E5',
+        border: '1px solid #C7D2FE',
+        borderRadius: '9999px',
+        fontWeight: 700,
         cursor: onClick ? 'pointer' : 'default',
         fontSize: size === 'small' ? '0.72rem' : '0.8rem',
-        padding: size === 'small' ? '2px 8px' : '4px 12px'
+        padding: size === 'small' ? '2px 8px' : '4px 10px',
+        transition: 'all 0.15s ease'
       }}
-      title="Click to inspect AI Match Suitability Breakdown"
+      title="Algorithmic Match Score breakdown"
     >
-      <span style={{ color: '#008f87' }}>✦</span>
-      <span>{score}% AI Match</span>
+      <Sparkles size={size === 'small' ? 11 : 13} color="#6366F1" />
+      <span>{score}% Match</span>
     </button>
   );
 };
+
+export default EvidenceBadge;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { MatchScoreBadge, EvidenceBadge } from '../../components/common/Badge';
 import {
   Sparkles,
   ArrowRight,
@@ -10,109 +11,175 @@ import {
   Layers,
   DollarSign,
   Calendar,
-  FileCheck2
+  FileCheck2,
+  Edit3,
+  Send,
+  Sliders,
+  Check,
+  Building2,
+  Clock,
+  Video
 } from 'lucide-react';
 
 export const AIBriefBuilderPage = () => {
-  const { addCampaign, navigateTo } = useApp();
+  const { addCampaign, navigateTo, creators, addToast } = useApp();
 
   const [promptInput, setPromptInput] = useState(
-    'We need a high-energy, futuristic commercial campaign for our new HydraPulse UV smart water bottle. Target audience is Gen Z tech lovers and gym-goers. We need 1 master 4K video showing realistic water droplets and UV glow, plus 3 vertical TikTok UGC videos, and 8K lifestyle images. Budget is around $4,500 with 3 weeks turnaround.'
+    'I own a jewellery brand and need a 30-second luxury AI advertisement for Instagram.'
   );
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [structuredBrief, setStructuredBrief] = useState(null);
 
   const samplePresets = [
     {
-      title: 'Luxury Skincare Launch',
-      prompt: 'We are launching Velvet Silk Hydration Serum. Need 10 hyper-realistic virtual beauty models with diverse skin tones and 8K product fluid dynamic renders. Need Sephora-ready commercial rights and trained LoRA weights.'
+      title: 'Jewellery Luxury Ad (Demo)',
+      prompt: 'I own a jewellery brand and need a 30-second luxury AI advertisement for Instagram.'
     },
     {
-      title: 'Cyberpunk Apparel 3D Runway',
-      prompt: 'Produce a 60-second virtual runway fashion show for our AW26 techwear collection. Wet Tokyo rain atmosphere, reflective waterproof fabrics, 8 distinct looks, and vertical social cuts.'
+      title: 'HydraPulse Smart Bottle',
+      prompt: 'We need a high-energy, futuristic 30s commercial for our HydraPulse UV water bottle with 9:16 vertical TikTok cuts and 8K product renders.'
     },
     {
-      title: 'Multi-lingual Voiceover Model',
-      prompt: 'Clone a studio-grade neural AI voice actor for interactive telehealth triage in English, Spanish, and German. Needs soothing empathetic tone and full enterprise perpetual broadcast rights.'
+      title: 'Digital Couture Lookbook',
+      prompt: 'Produce a 60-second virtual runway video for an autumn techwear apparel collection with reflective rain shaders and 8 distinct looks.'
     }
   ];
 
-  const handleGenerate = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      setStructuredBrief({
-        title: 'HydraPulse AI Smart Bottle Commercial Video Suite',
-        contentCategory: 'Commercial Video & 3D Visuals',
-        creativeStyle: 'Hyper-realistic, Studio Lighting, Dynamic Fluid Refraction',
-        targetAudience: 'Tech enthusiasts, fitness professionals, and Gen Z wellness advocates (aged 20-38)',
-        recommendedTools: ['Flux.1 Pro', 'ComfyUI', 'Runway Gen-3', 'ElevenLabs'],
-        requiredSkills: ['Fluid Simulation', 'Temporal Coherence', 'Color Grading', 'Voice Synthesis'],
-        deliverables: [
-          '1x 30s Master 4K Teaser Video (16:9)',
-          '3x 15s High-Energy Social Variations (9:16)',
-          '6x 8K Static Product Hero Visuals',
-          'Trained Brand LoRA weights archive'
-        ],
-        estimatedBudget: 4500,
-        timeline: '3 Weeks',
-        deadline: '2026-11-25',
-        usageRights: 'Full Commercial Global Buyout, Perpetual Digital & Broadcast',
-        ambiguitiesFlagged: [
-          {
-            issue: 'Audio Narration Scope',
-            recommendation: 'Specify whether AI voiceover script and sound track licensing are included or provided by brand.'
-          },
-          {
-            issue: 'Physical CAD File Provision',
-            recommendation: 'Confirm whether 3D bottle CAD (.obj/.step) is supplied or if creator must synthesize from 2D photos.'
-          }
-        ]
-      });
-      setIsGenerating(false);
-    }, 1200);
+  // Algorithmic Creator Recommendation Calculator
+  const getCalculatedMatches = (brief) => {
+    return creators
+      .map((creator) => {
+        let score = 70;
+        const matchingTools = creator.tools.filter((t) =>
+          brief.recommendedTools.some((bt) => bt.toLowerCase().includes(t.toLowerCase()) || t.toLowerCase().includes(bt.toLowerCase()))
+        );
+        const matchingSkills = creator.skills.filter((s) =>
+          brief.requiredSkills.some((bs) => bs.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(bs.toLowerCase()))
+        );
+
+        score += matchingTools.length * 7;
+        score += matchingSkills.length * 6;
+        if (creator.category.toLowerCase().includes('product') || creator.category.toLowerCase().includes('visual')) {
+          score += 6;
+        }
+        if (creator.startingPrice <= brief.estimatedBudget) {
+          score += 5;
+        }
+
+        const normalizedScore = Math.min(99, Math.max(75, score));
+
+        return {
+          creator,
+          score: normalizedScore,
+          matchingTools,
+          matchingSkills,
+          explanation: `${normalizedScore}% match: ${creator.name} specializes in ${creator.specialization} with audited ${matchingTools.join(', ') || creator.tools[0]} workflows and commercial rights.`
+        };
+      })
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
   };
 
-  const handleSaveAsCampaign = () => {
+  const handleGenerateBrief = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      const isJewellery = promptInput.toLowerCase().includes('jewel') || promptInput.toLowerCase().includes('gold') || promptInput.toLowerCase().includes('luxury');
+
+      setStructuredBrief({
+        title: isJewellery
+          ? 'Aura Luxe: 30-Second Luxury Diamond & Gold Jewellery Instagram Ad'
+          : 'High-Impact Generative Commercial Campaign Suite',
+        businessName: 'Aura Luxe Fine Jewellery',
+        campaignDescription: promptInput,
+        campaignObjective: 'Elevate luxury brand prestige, showcase macro diamond brilliance and fluid gold reflections, and drive engagement on Instagram Reels and Meta video ads.',
+        contentType: 'Commercial Video & 3D Visuals',
+        creativeStyle: 'High-End Luxury, Macro Diamond Refraction, Golden Hour Ambient Lighting, Photorealistic 8K Octane Quality',
+        format: 'MP4 / ProRes 422 HQ (4K Master + Vertical Social Cuts)',
+        aspectRatio: '9:16 (Instagram Reels/Stories) + 16:9 (Master 4K Widescreen) + 1:1 (Feed)',
+        duration: '30 Seconds (with 2x 10s cutdowns)',
+        recommendedTools: ['Flux.1 Pro', 'Midjourney v6.1', 'ComfyUI', 'Runway Gen-3', 'Magnific AI'],
+        requiredSkills: ['Macro Lighting', 'Fluid Refraction Simulation', 'Temporal Coherence', 'Color Grading', 'Custom LoRA Training'],
+        deliverables: [
+          '1x 30s Master 4K Vertical Video Ad (9:16)',
+          '2x 10s Short-Form Teaser Cutdowns (9:16)',
+          '5x 8K Photorealistic Diamond & Gold Lifestyle Hero Stills (1:1 & 4:5)',
+          'Trained Brand LoRA weights archive and generation seeds'
+        ],
+        revisionRequirements: '2 rounds of minor color grading and pacing adjustments included',
+        estimatedBudget: 4800,
+        timeline: '3 Weeks from acceptance',
+        deadline: '2026-11-25',
+        licensingRights: 'Full Commercial Global Buyout, Perpetual Digital & Meta Paid Social Broadcast Rights'
+      });
+      setIsGenerating(false);
+      setIsEditing(false);
+      addToast({
+        title: 'Brief Generated by AI',
+        message: 'Structured campaign parameters and recommended creators calculated!',
+        type: 'success'
+      });
+    }, 1000);
+  };
+
+  // Save Draft
+  const handleSaveDraft = () => {
     if (!structuredBrief) return;
-
     addCampaign({
-      title: structuredBrief.title,
-      objective: promptInput,
-      contentCategory: structuredBrief.contentCategory,
-      creativeStyle: structuredBrief.creativeStyle,
-      targetAudience: structuredBrief.targetAudience,
-      requiredTools: structuredBrief.recommendedTools,
-      requiredSkills: structuredBrief.requiredSkills,
-      deliverables: structuredBrief.deliverables,
+      ...structuredBrief,
+      status: 'Draft',
       budget: structuredBrief.estimatedBudget,
-      timeline: structuredBrief.timeline,
-      deadline: structuredBrief.deadline,
-      usageRights: structuredBrief.usageRights
+      requiredTools: structuredBrief.recommendedTools,
+      contentCategory: structuredBrief.contentType
     });
-
+    addToast({
+      title: 'Draft Saved',
+      message: 'Brief has been saved to My Briefs drafts.',
+      type: 'info'
+    });
     navigateTo('my-campaigns');
   };
 
+  // Publish Brief
+  const handlePublishBrief = () => {
+    if (!structuredBrief) return;
+    addCampaign({
+      ...structuredBrief,
+      status: 'Active',
+      budget: structuredBrief.estimatedBudget,
+      requiredTools: structuredBrief.recommendedTools,
+      contentCategory: structuredBrief.contentType
+    });
+    addToast({
+      title: 'Brief Published Live!',
+      message: 'Your brief is live in the marketplace and open for creator proposals!',
+      type: 'success'
+    });
+    navigateTo('my-campaigns');
+  };
+
+  const calculatedMatches = structuredBrief ? getCalculatedMatches(structuredBrief) : [];
+
   return (
-    <div className="page-content animate-fade-in" style={{ maxWidth: '1080px' }}>
+    <div className="page-content animate-fade-in" style={{ maxWidth: '1120px' }}>
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(0, 214, 201, 0.12)', padding: '4px 12px', borderRadius: 'var(--radius-full)', color: 'var(--electric-teal)', fontSize: '0.8rem', fontWeight: 700, marginBottom: '10px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--secondary-light)', padding: '4px 12px', borderRadius: 'var(--radius-full)', color: '#7C3AED', fontSize: '0.8rem', fontWeight: 700, marginBottom: '10px' }}>
           <Sparkles size={14} />
-          <span>AUTONOMOUS BRIEF GENERATOR</span>
+          <span>BONUS FEATURE: AI-ASSISTED BRIEF BUILDER</span>
         </div>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: 0 }}>
-          AI Brief Builder
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+          AI Brief Builder & Requirement Synthesizer
         </h1>
-        <p style={{ color: 'var(--muted-gray)', fontSize: '0.95rem', marginTop: '4px' }}>
-          Transform rough campaign ideas into complete, technical procurement briefs with automatic toolchain suggestions and ambiguity detection.
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '4px' }}>
+          Enter your rough creative idea to generate a structured, production-ready brief with editable deliverables, aspect ratios, tools, and algorithmic creator recommendations.
         </p>
       </div>
 
       {/* Preset Suggestions Bar */}
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
-        <span style={{ fontSize: '0.82rem', color: 'var(--muted-gray)', fontWeight: 600, alignSelf: 'center' }}>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px', alignItems: 'center' }}>
+        <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)', fontWeight: 600 }}>
           Sample Idea Prompts:
         </span>
         {samplePresets.map((preset, idx) => (
@@ -121,190 +188,382 @@ export const AIBriefBuilderPage = () => {
             type="button"
             onClick={() => setPromptInput(preset.prompt)}
             className="btn btn-outline btn-sm"
-            style={{ fontSize: '0.78rem', background: 'var(--white)' }}
+            style={{ fontSize: '0.78rem', backgroundColor: '#FFFFFF' }}
           >
             {preset.title}
           </button>
         ))}
       </div>
 
-      {/* Input Prompt Card */}
-      <div className="card" style={{ marginBottom: '32px' }}>
-        <label className="form-label" style={{ fontSize: '1rem', fontWeight: 700 }}>
-          Enter Your Rough Creative Idea or Campaign Concept:
+      {/* Prompt Input Card */}
+      <div className="card" style={{ marginBottom: '32px', backgroundColor: '#FFFFFF' }}>
+        <label className="form-label" style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '8px' }}>
+          Enter Your Rough Creative Idea:
         </label>
         <textarea
           className="form-textarea"
-          rows={5}
-          placeholder="e.g. We need a commercial for a smart wellness product. Need 30s 4K video, 3 TikTok UGC videos, clean studio look..."
+          rows={3}
+          placeholder="e.g. I own a jewellery brand and need a 30-second luxury AI advertisement for Instagram."
           value={promptInput}
           onChange={(e) => setPromptInput(e.target.value)}
           style={{ fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '16px' }}
         />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ fontSize: '0.8rem', color: 'var(--muted-gray)' }}>
-            AI analyzes creative category, required software (Flux, ComfyUI, ElevenLabs), aspect ratios, and market pricing.
+          <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+            AI analyzes objective, aspect ratio (16:9, 9:16), duration, deliverables, tools (Flux, ComfyUI, Runway), and commercial buyout terms.
           </div>
 
           <button
-            onClick={handleGenerate}
+            type="button"
+            onClick={handleGenerateBrief}
             disabled={isGenerating || !promptInput.trim()}
             className="btn btn-primary"
-            style={{ minWidth: '220px' }}
+            style={{ fontWeight: 700, padding: '10px 22px' }}
           >
             {isGenerating ? (
               <>
                 <RefreshCw size={16} className="animate-spin" />
-                <span>Analyzing & Structuring...</span>
+                <span>Decomposing & Synthesizing Brief...</span>
               </>
             ) : (
               <>
                 <Sparkles size={16} />
-                <span>Generate Structured Brief</span>
+                <span>Generate Brief</span>
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* Structured AI Output */}
+      {/* Structured Brief Output */}
       {structuredBrief && (
-        <div className="card animate-fade-in" style={{ border: '2px solid var(--electric-teal)', position: 'relative' }}>
+        <div className="animate-fade-in">
+          {/* Action Button Toolbar (Generate, Edit, Save Draft, Publish Brief) */}
           <div style={{
-            position: 'absolute',
-            top: '-12px',
-            right: '28px',
-            background: 'var(--electric-teal)',
-            color: 'var(--ink-black)',
-            padding: '3px 12px',
-            borderRadius: 'var(--radius-full)',
-            fontSize: '0.72rem',
-            fontWeight: 800
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: '#FFFFFF',
+            padding: '16px 20px',
+            borderRadius: 'var(--radius-lg)',
+            border: '1.5px solid var(--border-light)',
+            marginBottom: '24px',
+            boxShadow: 'var(--shadow-sm)',
+            flexWrap: 'wrap',
+            gap: '12px'
           }}>
-            STRUCTURED BRIEF GENERATED
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
-            <div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
-                {structuredBrief.title}
-              </h2>
-              <div style={{ fontSize: '0.85rem', color: 'var(--muted-gray)', marginTop: '4px' }}>
-                Category: <strong>{structuredBrief.contentCategory}</strong> • Style: <strong>{structuredBrief.creativeStyle}</strong>
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="badge badge-indigo" style={{ padding: '4px 10px' }}>
+                Structured Brief Ready
+              </span>
+              <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                Review and edit fields before publishing
+              </span>
             </div>
 
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <button
-                onClick={handleGenerate}
+                type="button"
+                onClick={() => setIsEditing(!isEditing)}
                 className="btn btn-outline btn-sm"
               >
-                <RefreshCw size={14} />
-                <span>Regenerate</span>
+                <Edit3 size={14} />
+                <span>{isEditing ? 'Done Editing' : 'Edit Brief'}</span>
               </button>
+
               <button
-                onClick={handleSaveAsCampaign}
-                className="btn btn-primary btn-sm"
+                type="button"
+                onClick={handleSaveDraft}
+                className="btn btn-outline btn-sm"
               >
                 <Save size={14} />
-                <span>Save as Active Campaign</span>
+                <span>Save Draft</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handlePublishBrief}
+                className="btn btn-primary btn-sm"
+                style={{ fontWeight: 700 }}
+              >
+                <Send size={14} />
+                <span>Publish Brief</span>
               </button>
             </div>
           </div>
 
-          {/* Ambiguities & Missing Requirements Box */}
-          {structuredBrief.ambiguitiesFlagged.length > 0 && (
-            <div style={{
-              background: '#FFFBEB',
-              border: '1px solid #FDE68A',
-              borderRadius: 'var(--radius-md)',
-              padding: '16px',
-              marginBottom: '24px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#B45309', fontWeight: 700, fontSize: '0.88rem', marginBottom: '8px' }}>
-                <AlertTriangle size={16} />
-                <span>Clarifications & Missing Requirements Detected:</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: '#78350F' }}>
-                {structuredBrief.ambiguitiesFlagged.map((item, idx) => (
-                  <div key={idx}>
-                    <strong>• {item.issue}:</strong> {item.recommendation}
+          {/* Main Structured Form / Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+            {/* Left Card: Core Campaign Specs */}
+            <div className="card" style={{ backgroundColor: '#FFFFFF', padding: '24px' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '16px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Building2 size={18} color="var(--primary)" />
+                <span>Campaign Specifications</span>
+              </h3>
+
+              {isEditing ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Campaign Title</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={structuredBrief.title}
+                      onChange={(e) => setStructuredBrief({ ...structuredBrief, title: e.target.value })}
+                    />
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Brand / Business Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={structuredBrief.businessName}
+                      onChange={(e) => setStructuredBrief({ ...structuredBrief, businessName: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Campaign Objective</label>
+                    <textarea
+                      className="form-textarea"
+                      rows={3}
+                      value={structuredBrief.campaignObjective}
+                      onChange={(e) => setStructuredBrief({ ...structuredBrief, campaignObjective: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Preferred Creative Style</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={structuredBrief.creativeStyle}
+                      onChange={(e) => setStructuredBrief({ ...structuredBrief, creativeStyle: e.target.value })}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      Campaign Title
+                    </div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                      {structuredBrief.title}
+                    </div>
+                  </div>
 
-          {/* Structured Fields Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '24px' }}>
-            <div>
-              <h4 style={{ fontSize: '0.8rem', color: 'var(--muted-gray)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Target Audience Demographic
-              </h4>
-              <p style={{ fontSize: '0.9rem', color: 'var(--ink-black)' }}>
-                {structuredBrief.targetAudience}
-              </p>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      Campaign Objective
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                      {structuredBrief.campaignObjective}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      Creative Aesthetic & Style
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                      {structuredBrief.creativeStyle}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div>
-              <h4 style={{ fontSize: '0.8rem', color: 'var(--muted-gray)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Recommended AI Toolchain
-              </h4>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
-                {structuredBrief.recommendedTools.map((t, idx) => (
-                  <span key={idx} className="badge badge-teal" style={{ fontSize: '0.72rem' }}>{t}</span>
-                ))}
-              </div>
-            </div>
+            {/* Right Card: Formats, Ratios, Deliverables & Budget */}
+            <div className="card" style={{ backgroundColor: '#FFFFFF', padding: '24px' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '16px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Video size={18} color="#7C3AED" />
+                <span>Technical Formats & Deliverables</span>
+              </h3>
 
-            <div>
-              <h4 style={{ fontSize: '0.8rem', color: 'var(--muted-gray)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Recommended Escrow Budget
-              </h4>
-              <p style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--ink-black)' }}>
-                ${structuredBrief.estimatedBudget} <span style={{ fontSize: '0.8rem', color: 'var(--muted-gray)', fontWeight: 400 }}>({structuredBrief.timeline})</span>
-              </p>
-            </div>
+              {isEditing ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Aspect Ratios & Format</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={structuredBrief.aspectRatio}
+                      onChange={(e) => setStructuredBrief({ ...structuredBrief, aspectRatio: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Duration</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={structuredBrief.duration}
+                      onChange={(e) => setStructuredBrief({ ...structuredBrief, duration: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Estimated Escrow Budget ($ USD)</label>
+                    <input
+                      type="number"
+                      className="form-input"
+                      value={structuredBrief.estimatedBudget}
+                      onChange={(e) => setStructuredBrief({ ...structuredBrief, estimatedBudget: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Commercial Licensing Terms</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={structuredBrief.licensingRights}
+                      onChange={(e) => setStructuredBrief({ ...structuredBrief, licensingRights: e.target.value })}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '10px 12px', borderRadius: '8px' }}>
+                      <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Aspect Ratio</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary)' }}>{structuredBrief.aspectRatio}</div>
+                    </div>
+                    <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '10px 12px', borderRadius: '8px' }}>
+                      <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Duration</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary)' }}>{structuredBrief.duration}</div>
+                    </div>
+                  </div>
 
-            <div>
-              <h4 style={{ fontSize: '0.8rem', color: 'var(--muted-gray)', textTransform: 'uppercase', marginBottom: '4px' }}>
-                Declared Commercial Rights
-              </h4>
-              <p style={{ fontSize: '0.85rem', color: 'var(--ink-black)' }}>
-                {structuredBrief.usageRights}
-              </p>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600, marginBottom: '6px' }}>
+                      Deliverables Checklist:
+                    </div>
+                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {structuredBrief.deliverables.map((deliv, idx) => (
+                        <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                          <CheckCircle2 size={15} color="#059669" style={{ flexShrink: 0, marginTop: '2px' }} />
+                          <span>{deliv}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div style={{
+                    backgroundColor: 'var(--primary-light)',
+                    padding: '12px 14px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)' }}>Target Escrow Budget:</span>
+                    <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--primary)' }}>${structuredBrief.estimatedBudget}</span>
+                  </div>
+
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    <strong>Licensing:</strong> {structuredBrief.licensingRights}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Deliverables List */}
-          <div style={{ background: 'var(--warm-ivory-light)', padding: '18px', borderRadius: 'var(--radius-md)', marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '10px' }}>
-              Structured Deliverables Package:
-            </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.9rem' }}>
-              {structuredBrief.deliverables.map((del, idx) => (
-                <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <CheckCircle2 size={16} color="var(--electric-teal)" />
-                  <span>{del}</span>
-                </li>
+          {/* AI CREATOR RECOMMENDATIONS (MANDATORY REQUIREMENT WITH REAL ALGORITHMIC SCORES) */}
+          <div className="card" style={{ padding: '24px', backgroundColor: '#FFFFFF', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase' }}>
+                  <Sparkles size={14} />
+                  <span>Algorithmic Compatibility Engine</span>
+                </div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                  Recommended Creators for This Brief
+                </h3>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '18px' }}>
+              {calculatedMatches.map(({ creator, score, matchingTools, matchingSkills, explanation }) => (
+                <div
+                  key={creator.id}
+                  style={{
+                    border: '1.5px solid var(--border-light)',
+                    borderRadius: 'var(--radius-lg)',
+                    padding: '18px',
+                    backgroundColor: 'var(--bg-secondary)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <img
+                          src={creator.avatar}
+                          alt={creator.name}
+                          style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }}
+                        />
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>{creator.name}</div>
+                          <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{creator.specialization}</div>
+                        </div>
+                      </div>
+                      <MatchScoreBadge score={score} size="small" />
+                    </div>
+
+                    <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '12px' }}>
+                      {explanation}
+                    </p>
+
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '14px' }}>
+                      {matchingTools.map((t, idx) => (
+                        <span key={idx} className="badge badge-indigo" style={{ fontSize: '0.68rem' }}>
+                          ✓ {t}
+                        </span>
+                      ))}
+                      {matchingSkills.slice(0, 2).map((s, idx) => (
+                        <span key={idx} className="badge badge-gray" style={{ fontSize: '0.68rem', backgroundColor: '#FFFFFF' }}>
+                          ✓ {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '10px',
+                    borderTop: '1px solid var(--border-light)'
+                  }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary)' }}>
+                      ${creator.startingPrice}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        addCampaign({
+                          ...structuredBrief,
+                          status: 'Active',
+                          budget: structuredBrief.estimatedBudget,
+                          requiredTools: structuredBrief.recommendedTools
+                        });
+                        navigateTo('explore-creators');
+                      }}
+                      className="btn btn-primary btn-sm"
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      <span>Invite Creator</span>
+                      <ArrowRight size={13} />
+                    </button>
+                  </div>
+                </div>
               ))}
-            </ul>
-          </div>
-
-          {/* Bottom Save Action */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-            <button
-              onClick={handleSaveAsCampaign}
-              className="btn btn-primary"
-              style={{ minWidth: '240px' }}
-            >
-              <span>Save & Publish as Live Campaign</span>
-              <ArrowRight size={16} />
-            </button>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 };
+
+export default AIBriefBuilderPage;

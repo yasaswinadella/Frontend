@@ -19,7 +19,12 @@ import {
   Lock,
   Upload,
   Check,
-  FileText
+  FileText,
+  Briefcase,
+  Star,
+  Award,
+  Zap,
+  Building2
 } from 'lucide-react';
 
 export const CreatorDashboardPage = () => {
@@ -36,419 +41,340 @@ export const CreatorDashboardPage = () => {
 
   const myEngagements = projects.filter((p) => p.creatorId === activeCreatorProfile.id || p.id === 'proj-101');
   const myRequests = collaborationRequests.filter((r) => r.creatorId === activeCreatorProfile.id || r.type === 'Brand Invitation');
+  const openCampaigns = campaigns.filter((c) => c.status === 'Active');
+
+  const incomingInvitations = collaborationRequests.filter(
+    (r) => (r.creatorId === activeCreatorProfile.id || r.type === 'Brand Invitation') && r.status === 'Incoming'
+  );
 
   return (
-    <div className="page-content animate-fade-in" style={{ padding: '28px 32px' }}>
-      {/* Top Status Indicators */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-        <span style={{
-          background: '#ECFDF5',
-          border: '1px solid #A7F3D0',
-          color: '#059669',
-          padding: '3px 10px',
-          borderRadius: 'var(--radius-full)',
-          fontSize: '0.72rem',
-          fontWeight: 800,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '5px'
-        }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669' }} />
-          VERIFIED TALENT
-        </span>
-
-        <span style={{
-          background: 'rgba(0, 214, 201, 0.12)',
-          border: '1px solid rgba(0, 214, 201, 0.4)',
-          color: '#008f87',
-          padding: '3px 10px',
-          borderRadius: 'var(--radius-full)',
-          fontSize: '0.72rem',
-          fontWeight: 700,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '5px'
-        }}>
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--electric-teal)' }} />
-          Open for Collabs
-        </span>
-      </div>
-
-      {/* Header & Quick Action Buttons */}
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ fontSize: '0.72rem', color: 'var(--muted-gray)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
-          SYSTEM OPERATIONAL • CRYPTOGRAPHIC LEDGER ONLINE
-        </div>
+    <div className="page-content animate-fade-in">
+      {/* SaaS Welcome Header */}
+      <div style={{ marginBottom: '28px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, margin: 0, color: 'var(--ink-black)', letterSpacing: '-0.02em' }}>
-              Welcome back, {activeCreatorProfile.name || 'Elena Vance'}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#7C3AED', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>
+              <Award size={14} />
+              <span>Verified Generative Artist Studio</span>
+            </div>
+            <h1 style={{ fontSize: '1.95rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>
+              Welcome back, {activeCreatorProfile.name || 'Sophia Chan'}
             </h1>
-            <p style={{ color: 'var(--muted-gray)', fontSize: '0.95rem', marginTop: '4px' }}>
-              Verified Level 2 Creator • Audit ID <strong>#8461-CP</strong> • Your synthetic media proofs perform in <strong>top 2% platform-wide</strong>.
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '3px' }}>
+              Level 2 Verified AI Creator • Your ComfyUI workflow claims perform in the <strong>top 2% platform-wide</strong>.
             </p>
           </div>
 
           {/* Action CTAs */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
+              type="button"
               onClick={() => navigateTo('available-campaigns')}
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary"
+              style={{ backgroundColor: '#7C3AED', borderColor: '#7C3AED', gap: '6px' }}
             >
-              <Compass size={15} />
-              <span>Explore Campaigns</span>
+              <Compass size={14} />
+              <span>Explore Brand Briefs</span>
             </button>
             <button
+              type="button"
               onClick={() => navigateTo('portfolio-manager')}
-              className="btn btn-outline btn-sm"
-              style={{ background: 'var(--white)', fontWeight: 600 }}
+              className="btn btn-outline"
+              style={{ gap: '6px' }}
             >
+              <Sparkles size={14} color="#7C3AED" />
               <span>Manage Portfolio</span>
             </button>
             <button
+              type="button"
               onClick={() => navigateTo('creator-requests')}
-              className="btn btn-outline btn-sm"
-              style={{ background: 'var(--white)', fontWeight: 600 }}
+              className="btn btn-outline"
+              style={{ gap: '6px' }}
             >
               <Inbox size={14} />
-              <span>View Requests</span>
-            </button>
-            <button
-              onClick={() => navigateTo('creator-profile')}
-              className="btn btn-outline btn-sm"
-              style={{ background: 'var(--white)', fontWeight: 600 }}
-            >
-              <Edit size={14} />
-              <span>Edit Profile</span>
+              <span>Invitations ({incomingInvitations.length})</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Profile Readiness & Evidence Bar (Exact Reference Component) */}
-      <div className="card" style={{ padding: '16px 20px', marginBottom: '28px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 700 }}>
-            <span>Profile Readiness:</span>
-            <span style={{ color: '#008f87' }}>88% Complete</span>
-            <span style={{ color: 'var(--muted-gray)', fontWeight: 400 }}>• Level 2 → Level 3 Target</span>
+      {/* Profile Completion Readiness Bar */}
+      <div className="card" style={{ padding: '18px 22px', marginBottom: '28px', backgroundColor: '#FFFFFF' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+            <ShieldCheck size={17} color="#059669" />
+            <span>Profile Verification Readiness Score:</span>
+            <span style={{ color: '#059669' }}>95% Complete</span>
           </div>
-          <span style={{ fontSize: '0.78rem', color: 'var(--muted-gray)' }}>
-            Add client contract proof to reach 100% Verified Level 3 status
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            1 more C2PA manifest to unlock Elite Platinum Creator Tier
           </span>
         </div>
 
         {/* Progress Bar */}
-        <div style={{ height: '6px', background: 'var(--warm-ivory-light)', borderRadius: '3px', overflow: 'hidden', marginBottom: '14px' }}>
-          <div style={{ width: '88%', height: '100%', background: 'var(--electric-teal)' }} />
+        <div style={{ height: '6px', backgroundColor: '#F1F5F9', borderRadius: '999px', overflow: 'hidden', marginBottom: '12px' }}>
+          <div style={{ width: '95%', height: '100%', background: 'linear-gradient(90deg, #6366F1 0%, #059669 100%)', borderRadius: '999px' }} />
         </div>
 
-        {/* Proof Status Pills */}
+        {/* Status Badges */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <span style={{ background: '#ECFDF5', color: '#059669', border: '1px solid #A7F3D0', padding: '3px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 700 }}>
-              ✓ 14 Claims Verified
-            </span>
-            <span style={{ background: '#F0F9FF', color: '#0284C7', border: '1px solid #BAE6FD', padding: '3px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 700 }}>
-              ● 2 Evidence-Linked
-            </span>
-            <span style={{ background: '#FFFBEB', color: '#D97706', border: '1px solid #FDE68A', padding: '3px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 700 }}>
-              ! 0 Unverified
-            </span>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <span className="badge badge-verified"><span className="badge-dot" style={{ backgroundColor: '#059669' }}></span> 14 Claims Verified</span>
+            <span className="badge badge-indigo"><span className="badge-dot" style={{ backgroundColor: '#6366F1' }}></span> ComfyUI Node Graph Linked</span>
+            <span className="badge badge-gray">✓ Commercial Buyout Terms Active</span>
           </div>
 
           <button
+            type="button"
             onClick={() => navigateTo('evidence-verification')}
-            style={{ background: 'none', border: 'none', color: 'var(--electric-teal)', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+            className="btn btn-ghost btn-sm"
+            style={{ color: 'var(--primary)', fontWeight: 600, fontSize: '0.78rem' }}
           >
-            <span>Manage Evidence & Logs</span>
+            <span>Evidence Center</span>
             <ArrowRight size={13} />
           </button>
         </div>
       </div>
 
-      {/* 4 Stat Metric Cards (Exact Reference Design) */}
+      {/* 4 SaaS Creator Metric Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: '18px',
-        marginBottom: '32px'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: '16px',
+        marginBottom: '28px'
       }}>
-        {/* Card 1: Active Engagements */}
+        {/* Card 1: Portfolio Projects */}
         <div
-          className="card card-hover"
-          onClick={() => navigateTo('creator-projects')}
-          style={{ cursor: 'pointer', padding: '20px 22px' }}
+          className="stat-card"
+          onClick={() => navigateTo('portfolio-manager')}
+          style={{ cursor: 'pointer' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted-gray)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Active Engagements
+          <div className="stat-label">
+            <span>Portfolio Renders</span>
+            <Sparkles size={16} color="#7C3AED" />
+          </div>
+          <div className="stat-value">
+            {activeCreatorProfile.portfolio?.length || 4}
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>projects</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span className="stat-trend positive">
+              ✓ All Lineage Audited
             </span>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--warm-ivory-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FolderKanban size={14} color="var(--ink-black)" />
-            </div>
-          </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--ink-black)', lineHeight: 1.1 }}>
-            2 Ongoing
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: 600, marginTop: '8px' }}>
-            PROJECTS ON TRACK • LIME USA
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>100% C2PA</span>
           </div>
         </div>
 
-        {/* Card 2: Collaboration Invitations */}
+        {/* Card 2: Received Invitations */}
         <div
-          className="card card-hover"
+          className="stat-card"
           onClick={() => navigateTo('creator-requests')}
-          style={{ cursor: 'pointer', padding: '20px 22px' }}
+          style={{ cursor: 'pointer' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted-gray)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Collaboration Invitations
+          <div className="stat-label">
+            <span>Inbound Invitations</span>
+            <Inbox size={16} color="#D97706" />
+          </div>
+          <div className="stat-value">
+            {myRequests.length}
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>total</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span className="stat-trend positive" style={{ backgroundColor: '#FEF3C7', color: '#B45309' }}>
+              <Clock size={12} /> {incomingInvitations.length} pending
             </span>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#FFFBEB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Inbox size={14} color="#D97706" />
-            </div>
-          </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--ink-black)', lineHeight: 1.1 }}>
-            3 Pending
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: 600, marginTop: '8px' }}>
-            APEX, SOBA & LUMA • Review
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>1-click accept</span>
           </div>
         </div>
 
-        {/* Card 3: Avg AI Match Score */}
+        {/* Card 3: Submitted Proposals */}
         <div
-          className="card card-hover"
-          onClick={() => navigateTo('available-campaigns')}
-          style={{ cursor: 'pointer', padding: '20px 22px' }}
+          className="stat-card"
+          onClick={() => navigateTo('creator-requests')}
+          style={{ cursor: 'pointer' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted-gray)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Avg AI Match Score
+          <div className="stat-label">
+            <span>Active Proposals</span>
+            <FileSpreadsheet size={16} color="var(--primary)" />
+          </div>
+          <div className="stat-value">
+            3
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>submitted</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span className="stat-trend neutral">
+              Under Review
             </span>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--electric-teal-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Sparkles size={14} color="#008f87" />
-            </div>
-          </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--ink-black)', lineHeight: 1.1 }}>
-            96%
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#008f87', fontWeight: 600, marginTop: '8px' }}>
-            TOP-TIER RESONANCE • +4.2% MoM
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>Avg 94% match</span>
           </div>
         </div>
 
-        {/* Card 4: Escrow Earnings */}
+        {/* Card 4: Active Escrow Collaborations */}
         <div
-          className="card card-hover"
+          className="stat-card"
           onClick={() => navigateTo('creator-projects')}
-          style={{ cursor: 'pointer', padding: '20px 22px' }}
+          style={{ cursor: 'pointer' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted-gray)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Escrow Earnings
+          <div className="stat-label">
+            <span>Active Client Projects</span>
+            <FolderKanban size={16} color="#059669" />
+          </div>
+          <div className="stat-value">
+            {myEngagements.length}
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>milestones</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span className="stat-trend positive">
+              <ShieldCheck size={12} /> $9,200 Secured
             </span>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <DollarSign size={14} color="#059669" />
-            </div>
-          </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--ink-black)', lineHeight: 1.1 }}>
-            $14,200
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: 600, marginTop: '8px' }}>
-            ESCROW SECURED • Next payout in 2d
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>Escrow funded</span>
           </div>
         </div>
       </div>
 
-      {/* Main Two-Column Lower Layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) minmax(0, 1.2fr)', gap: '28px', alignItems: 'start' }}>
-        {/* LEFT COLUMN: Active Engagements & Milestone Tracker + Recommended Campaigns */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Active Engagement Card */}
-          <div className="card" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-              <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0 }}>
-                  Active Engagements & Milestone Tracker
-                </h3>
-                <span style={{ fontSize: '0.78rem', color: 'var(--muted-gray)' }}>1 Milestone Pending</span>
+      {/* Grid: Open Opportunities & Incoming Brief Requests */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px', marginBottom: '28px' }}>
+        {/* Left: Recent Funded Brand Briefs */}
+        <div className="card" style={{ padding: '22px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Compass size={15} color="#7C3AED" />
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                  Funded Brand Briefs
+                </h2>
               </div>
-
-              <button
-                onClick={() => navigateTo('creator-projects')}
-                style={{ background: 'none', border: 'none', color: 'var(--electric-teal)', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-              >
-                <span>View All Projects</span>
-                <ArrowRight size={13} />
-              </button>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: '2px 0 0' }}>
+                Verified brands seeking your generative video & 3D stack
+              </p>
             </div>
+            <button
+              type="button"
+              onClick={() => navigateTo('available-campaigns')}
+              className="btn btn-ghost btn-sm"
+              style={{ color: '#7C3AED', fontWeight: 600 }}
+            >
+              <span>Explore All</span>
+              <ArrowRight size={13} />
+            </button>
+          </div>
 
-            {/* Project Box */}
-            <div style={{ background: 'var(--warm-ivory-light)', padding: '18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--soft-border)', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {openCampaigns.slice(0, 3).map((camp) => (
+              <div
+                key={camp.id}
+                onClick={() => {
+                  setSelectedCampaignId(camp.id);
+                  navigateTo('creator-campaign-detail');
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 14px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-light)',
+                  boxShadow: 'var(--shadow-xs)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#DDD6FE';
+                  e.currentTarget.style.backgroundColor = 'var(--secondary-light)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border-light)';
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                }}
+              >
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>
-                      Aether Cosmetics Spring Campaign
-                    </h4>
-                    <span style={{ fontSize: '0.7rem', background: '#FEF2F2', color: '#DC2626', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
-                      ACTION REQUIRED
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                    <Building2 size={13} color="var(--primary)" />
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>{camp.brandName}</span>
+                    <span className="badge badge-purple" style={{ fontSize: '0.65rem', padding: '1px 5px' }}>{camp.contentCategory}</span>
                   </div>
-                  <div style={{ fontSize: '0.82rem', color: 'var(--muted-gray)', marginTop: '3px' }}>
-                    Client: <strong>Aether Luxury Paris</strong> • Deliverable Batch 02 of 4 • Escrow Locked: <strong>$3,500</strong>
+                  <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+                    {camp.title}
                   </div>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--muted-gray)', textTransform: 'uppercase', fontWeight: 700 }}>BATCH STATUS</span>
-                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink-black)' }}>50%</div>
-                </div>
-              </div>
-
-              {/* Revision Notice Box */}
-              <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '12px 16px', borderRadius: 'var(--radius-md)', marginBottom: '14px', color: '#78350F', fontSize: '0.84rem' }}>
-                <div style={{ fontWeight: 800, color: '#B45309', marginBottom: '3px' }}>
-                  Revision Requested by Creative Lead:
-                </div>
-                <p style={{ fontStyle: 'italic', margin: '0 0 10px 0', lineHeight: 1.4 }}>
-                  "Warm lighting adjustment on serum reflection highlights to match neutral daylight tone. Diffusion passes uploaded in review files."
-                </p>
-
-                <button
-                  onClick={() => navigateTo('creator-projects', { projectId: 'proj-101' })}
-                  className="btn btn-primary btn-sm"
-                  style={{ fontSize: '0.78rem' }}
-                >
-                  <Upload size={14} />
-                  <span>Upload Revision v2</span>
-                </button>
-              </div>
-
-              {/* Sub-bar */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: 'var(--muted-gray)', borderTop: '1px solid var(--soft-border)', paddingTop: '10px' }}>
-                <span>C2PA Provenance Manifest Attached • Checksum: 0x89abfa...e12b</span>
-                <span style={{ color: '#DC2626', fontWeight: 700 }}>Due in 24 hours</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Recommended Campaigns [Smart Match] */}
-          <div className="card" style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Sparkles size={16} color="var(--electric-teal)" />
-                  <span>Recommended Campaigns</span>
-                </h3>
-                <span style={{ fontSize: '0.75rem', color: 'var(--muted-gray)' }}>Calibrated by AI Portfolio Audit</span>
-              </div>
-
-              <button
-                onClick={() => navigateTo('available-campaigns')}
-                style={{ background: 'none', border: 'none', color: 'var(--electric-teal)', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}
-              >
-                View All Available
-              </button>
-            </div>
-
-            {/* Campaign 1 Card */}
-            <div style={{ background: 'var(--warm-ivory-light)', padding: '18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--soft-border)', marginBottom: '14px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                <div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--muted-gray)', fontWeight: 600 }}>Nike Vision</span>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '2px 0 0' }}>
-                    Autonomous Runner 2026
-                  </h4>
-                  <div style={{ marginTop: '4px' }}>
-                    <MatchScoreBadge score={98} size="small" />
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                    ${camp.budget?.toLocaleString()}
                   </div>
-                </div>
-
-                <div style={{ textAlign: 'right', fontSize: '0.82rem' }}>
-                  <div>BUDGET: <strong>$4,500</strong></div>
-                  <div>DEADLINE: <strong>Apr 15</strong></div>
-                  <div style={{ color: 'var(--muted-gray)' }}>SCOPE: 6 Key Visuals</div>
+                  <MatchScoreBadge score={98} size="small" />
                 </div>
               </div>
-
-              {/* Rationale */}
-              <div style={{ background: 'var(--white)', padding: '10px 14px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--soft-border)', fontSize: '0.82rem', marginTop: '10px', marginBottom: '12px' }}>
-                <strong style={{ color: '#008f87' }}>Why You Match:</strong> Matches your verified ComfyUI photoreal style, athletic commercial portfolio assets, and 48hr SLA turn.
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                <button
-                  onClick={() => navigateTo('creator-campaign-detail', { campaignId: 'camp-1' })}
-                  className="btn btn-outline btn-sm"
-                  style={{ background: 'var(--white)', fontSize: '0.75rem' }}
-                >
-                  View Brief
-                </button>
-                <button
-                  onClick={() => navigateTo('submit-proposal', { campaignId: 'camp-1' })}
-                  className="btn btn-primary btn-sm"
-                  style={{ fontSize: '0.75rem' }}
-                >
-                  Submit Proposal
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Proposals in Pipeline */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Proposals in Pipeline Widget */}
-          <div className="card" style={{ padding: '22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>
-                Proposals in Pipeline
-              </h3>
-              <span style={{ fontSize: '0.75rem', color: 'var(--muted-gray)' }}>2 Active Proposals</span>
+        {/* Right: Inbound Collaboration Invitations */}
+        <div className="card" style={{ padding: '22px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Inbox size={15} color="#D97706" />
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                Direct Client Invitations
+              </h2>
             </div>
+            <button
+              type="button"
+              onClick={() => navigateTo('creator-requests')}
+              className="btn btn-ghost btn-sm"
+              style={{ color: 'var(--primary)', fontWeight: 600 }}
+            >
+              <span>Manage All</span>
+              <ArrowRight size={13} />
+            </button>
+          </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {/* Proposal 1 */}
-              <div style={{ background: 'var(--warm-ivory-light)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <strong style={{ fontSize: '0.92rem' }}>Cyberpunk Spring Launch</strong>
-                  <span style={{ fontSize: '0.7rem', background: '#F3F4F6', color: '#4B5563', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
-                    IN REVIEW
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {myRequests.map((req) => (
+              <div
+                key={req.id}
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid var(--border-light)',
+                  boxShadow: 'var(--shadow-xs)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                      {req.brandName}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {req.campaignTitle}
+                    </div>
+                  </div>
+                  <span className="badge badge-pending" style={{ fontSize: '0.68rem' }}>
+                    {req.status}
                   </span>
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--muted-gray)' }}>
-                  Under review by creative director at Studio Neo.
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.78rem' }}>
-                  <span style={{ color: 'var(--muted-gray)' }}>Submitted 2d ago</span>
-                  <strong>$3,400 Bid</strong>
-                </div>
-              </div>
 
-              {/* Proposal 2 */}
-              <div style={{ background: 'var(--warm-ivory-light)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <strong style={{ fontSize: '0.92rem' }}>Luma Cinematic Title Sequence</strong>
-                  <span style={{ fontSize: '0.7rem', background: '#ECFDF5', color: '#059669', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
-                    ACCEPTED
-                  </span>
-                </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--muted-gray)' }}>
-                  Counteroffer accepted; pending smart contract deposit setup.
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.78rem' }}>
-                  <span style={{ color: '#059669', fontWeight: 700 }}>Contract Ready</span>
-                  <strong>$5,200 Locked</strong>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    {req.offeredAmount || '$3,000'}
+                  </div>
+                  <button
+                    onClick={() => navigateTo('creator-requests')}
+                    className="btn btn-primary btn-sm"
+                    style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                  >
+                    Review & Respond
+                  </button>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default CreatorDashboardPage;

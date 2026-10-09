@@ -22,7 +22,10 @@ import {
   DollarSign,
   TrendingUp,
   Sliders,
-  Check
+  Check,
+  Play,
+  X,
+  FileText
 } from 'lucide-react';
 
 export const BrandCreatorDetailPage = () => {
@@ -34,26 +37,23 @@ export const BrandCreatorDetailPage = () => {
     navigateTo,
     shortlistedCreatorIds,
     toggleShortlist,
-    sendCollaborationRequest
+    sendCollaborationRequest,
+    addToast
   } = useApp();
 
   const creator = creators.find((c) => c.id === selectedCreatorId) || creators[0];
   const isShortlisted = shortlistedCreatorIds.includes(creator.id);
-  const [activeTab, setActiveTab] = useState('about'); // 'about' | 'experience' | 'portfolio' | 'evidence' | 'pricing'
+  const [activeTab, setActiveTab] = useState('portfolio'); // 'portfolio' | 'workflow' | 'experience' | 'terms'
   const [isCollabModalOpen, setIsCollabModalOpen] = useState(false);
   const [selectedPortfolioItem, setSelectedPortfolioItem] = useState(null);
 
   // Proposal form state
   const [proposalCampaignId, setProposalCampaignId] = useState(campaigns[0]?.id || '');
-  const [proposalTitle, setProposalTitle] = useState(`Campaign Collaboration: ${campaigns[0]?.title || 'Custom Campaign'}`);
-  const [proposalBudget, setProposalBudget] = useState(creator.startingPrice);
-  const [proposalTimeline, setProposalTimeline] = useState('2 Weeks');
-  const [proposalMilestones, setProposalMilestones] = useState('Milestone 1 (30%): Concept & Styleframes\nMilestone 2 (40%): 4K Master Renders\nMilestone 3 (30%): Source LoRA & Final C2PA Delivery');
+  const [proposalBudget, setProposalBudget] = useState(creator.startingPrice || 2500);
+  const [proposalTimeline, setProposalTimeline] = useState('3 Weeks');
   const [proposalMessage, setProposalMessage] = useState(
-    `Hi ${creator.name},\n\nWe were impressed by your audited portfolio and verified ${creator.tools[0]} workflows. We would love to invite you to collaborate on our active campaign with escrow-protected milestones.`
+    `Hi ${creator.name},\n\nWe were impressed by your verified AI portfolio and workflow proofs. We would love to collaborate with you on our upcoming campaign with milestone-backed escrow protection.`
   );
-
-  const creatorEvidence = evidenceRecords.filter((e) => e.creatorId === creator.id);
 
   const handleSendProposal = (e) => {
     e.preventDefault();
@@ -62,16 +62,22 @@ export const BrandCreatorDetailPage = () => {
       creatorId: creator.id,
       budget: Number(proposalBudget),
       deadline: proposalTimeline,
-      message: `${proposalTitle}\n\n${proposalMessage}\n\nMilestones:\n${proposalMilestones}`
+      message: proposalMessage
+    });
+    addToast({
+      title: 'Proposal Dispatched!',
+      message: `Invitation successfully sent to ${creator.name}.`,
+      type: 'success'
     });
     setIsCollabModalOpen(false);
   };
 
   return (
     <div className="page-content animate-fade-in">
-      {/* Back Navigation Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      {/* Back Navigation & Action Bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <button
+          type="button"
           onClick={() => navigateTo('explore-creators')}
           style={{
             display: 'inline-flex',
@@ -79,656 +85,496 @@ export const BrandCreatorDetailPage = () => {
             gap: '6px',
             background: 'none',
             border: 'none',
-            color: 'var(--muted-gray)',
+            color: 'var(--text-muted)',
             fontSize: '0.88rem',
-            fontWeight: 700,
+            fontWeight: 600,
             cursor: 'pointer'
           }}
         >
           <ArrowLeft size={16} />
-          Back to Explore Creators
+          <span>Back to Discover Creators</span>
         </button>
 
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '10px' }}>
           <button
+            type="button"
             onClick={() => toggleShortlist(creator.id)}
             className="btn btn-outline btn-sm"
           >
-            <Bookmark size={15} fill={isShortlisted ? 'var(--electric-teal)' : 'none'} color={isShortlisted ? 'var(--electric-teal)' : 'currentColor'} />
-            <span>{isShortlisted ? 'Shortlisted' : 'Save Creator'}</span>
+            <Bookmark size={15} fill={isShortlisted ? 'var(--primary)' : 'none'} color={isShortlisted ? 'var(--primary)' : 'currentColor'} />
+            <span>{isShortlisted ? 'Shortlisted' : 'Shortlist Creator'}</span>
           </button>
           <button
+            type="button"
             onClick={() => setIsCollabModalOpen(true)}
             className="btn btn-primary btn-sm"
-            style={{ fontWeight: 800 }}
+            style={{ fontWeight: 700 }}
           >
             <Send size={15} />
-            <span>Send Proposal / Brief</span>
+            <span>Invite to Project</span>
           </button>
         </div>
       </div>
 
-      {/* Creator Header Profile Card */}
-      <div className="card" style={{ marginBottom: '28px', padding: '28px' }}>
+      {/* Creator Profile Header Card */}
+      <div className="card" style={{ marginBottom: '28px', padding: '28px', backgroundColor: '#FFFFFF' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '24px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', flexWrap: 'wrap' }}>
             <img
               src={creator.avatar}
               alt={creator.name}
               style={{
-                width: '100px',
-                height: '100px',
-                borderRadius: '20px',
+                width: '90px',
+                height: '90px',
+                borderRadius: '50%',
                 objectFit: 'cover',
-                border: '3px solid var(--electric-teal)',
-                boxShadow: '0 6px 18px rgba(0,0,0,0.1)'
+                border: '3px solid #FFFFFF',
+                boxShadow: 'var(--shadow-md)'
               }}
             />
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                <h1 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
                   {creator.name}
                 </h1>
-                <span style={{ color: 'var(--muted-gray)', fontSize: '0.95rem' }}>{creator.handle}</span>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{creator.handle}</span>
                 <EvidenceBadge status={creator.evidenceStatus} />
-                <MatchScoreBadge score={creator.matchScore} />
               </div>
-              <p style={{ color: 'var(--muted-gray)', fontSize: '0.94rem', marginTop: '6px', maxWidth: '780px', lineHeight: 1.5 }}>
+              <div style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '8px' }}>
                 {creator.headline}
-              </p>
-              <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', marginTop: '12px', fontSize: '0.86rem' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#EAB308', fontWeight: 700 }}>
-                  ★ {creator.rating} ({creator.reviewsCount} reviews)
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '18px', fontSize: '0.85rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <MapPin size={14} /> {creator.location}
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--muted-gray)' }}>
-                  <MapPin size={15} /> {creator.location}
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Clock size={14} /> {creator.availability}
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#059669', fontWeight: 700 }}>
-                  <Clock size={15} /> {creator.availability}
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--ink-black)', fontWeight: 600 }}>
-                  <Briefcase size={15} /> {creator.completedJobs} Completed Campaigns
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: '#F59E0B' }}>
+                  <Star size={14} fill="#F59E0B" /> {creator.rating} ({creator.reviewsCount} reviews)
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Action CTAs */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '220px' }}>
-            <button
-              onClick={() => setIsCollabModalOpen(true)}
-              className="btn btn-primary"
-              style={{ padding: '12px 20px', fontSize: '0.95rem', fontWeight: 800, justifyContent: 'center' }}
-            >
-              <Send size={16} />
-              <span>Send Proposal / Brief</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Quick Highlights Bar */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '16px',
-          background: 'var(--warm-ivory-light)',
-          padding: '16px 20px',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--soft-border)'
-        }}>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--muted-gray)', fontWeight: 700, textTransform: 'uppercase' }}>Hourly Rate</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink-black)' }}>${creator.hourlyRate} / hr</div>
-          </div>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--muted-gray)', fontWeight: 700, textTransform: 'uppercase' }}>Deliverable Pack</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--ink-black)' }}>Starts at ${creator.startingPrice}</div>
-          </div>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--muted-gray)', fontWeight: 700, textTransform: 'uppercase' }}>Audited Provenance</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--electric-teal)' }}>{creator.verifiedCount} C2PA Proofs</div>
-          </div>
-          <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--muted-gray)', fontWeight: 700, textTransform: 'uppercase' }}>Campaign Match</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#059669' }}>{creator.matchScore}% Compatibility</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Detail Navigation Tabs */}
-      <div className="tab-list">
-        <button
-          className={`tab-btn ${activeTab === 'about' ? 'active' : ''}`}
-          onClick={() => setActiveTab('about')}
-        >
-          <Sparkles size={15} style={{ display: 'inline', marginRight: '6px' }} />
-          About Creator & Skills
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'experience' ? 'active' : ''}`}
-          onClick={() => setActiveTab('experience')}
-        >
-          <Briefcase size={15} style={{ display: 'inline', marginRight: '6px' }} />
-          Experience & Track Record
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'portfolio' ? 'active' : ''}`}
-          onClick={() => setActiveTab('portfolio')}
-        >
-          <Layers size={15} style={{ display: 'inline', marginRight: '6px' }} />
-          Portfolio & Work ({creator.portfolio.length})
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'evidence' ? 'active' : ''}`}
-          onClick={() => setActiveTab('evidence')}
-        >
-          <ShieldCheck size={15} style={{ display: 'inline', marginRight: '6px' }} />
-          Audited Provenance ({creatorEvidence.length})
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'pricing' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pricing')}
-        >
-          <DollarSign size={15} style={{ display: 'inline', marginRight: '6px' }} />
-          Pricing & Licensing Terms
-        </button>
-      </div>
-
-      {/* TAB 1: ABOUT CREATOR & SKILLS */}
-      {activeTab === 'about' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div className="card">
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '14px' }}>
-              Creative Bio & Approach
-            </h3>
-            <p style={{ fontSize: '0.96rem', color: 'var(--ink-black)', lineHeight: 1.7, margin: 0 }}>
-              {creator.bio}
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '24px' }}>
-            {/* Mastered AI Toolchain */}
-            <div className="card">
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={18} color="var(--electric-teal)" />
-                Mastered AI Toolchains
-              </h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                {creator.tools.map((tool, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      background: 'var(--warm-ivory-light)',
-                      border: '1px solid var(--soft-border)',
-                      padding: '8px 14px',
-                      borderRadius: 'var(--radius-md)',
-                      fontWeight: 700,
-                      fontSize: '0.88rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
-                    }}
-                  >
-                    <CheckCircle2 size={14} color="var(--electric-teal)" />
-                    <span>{tool}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Core Specialized Disciplines */}
-            <div className="card">
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Award size={18} color="var(--electric-teal)" />
-                Core Disciplines & Skills
-              </h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-                {creator.skills.map((skill, idx) => (
-                  <span
-                    key={idx}
-                    style={{
-                      background: 'var(--ink-black)',
-                      color: 'var(--white)',
-                      padding: '6px 14px',
-                      borderRadius: 'var(--radius-full)',
-                      fontSize: '0.84rem',
-                      fontWeight: 700
-                    }}
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: THEIR EXPERIENCE & TRACK RECORD */}
-      {activeTab === 'experience' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Key Strengths & Commercial Proven Track Record */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '24px' }}>
-            <div className="card" style={{ borderLeft: '4px solid #059669' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#059669' }}>
-                <TrendingUp size={20} />
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'inherit' }}>
-                  Audited Technical Strengths ({creator.matchScore}% Match)
-                </h3>
-              </div>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '14px', padding: 0, margin: 0 }}>
-                {creator.matchStrengths.map((strength, idx) => (
-                  <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.92rem' }}>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ECFDF5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-                      <Check size={13} />
-                    </div>
-                    <span style={{ color: 'var(--ink-black)', lineHeight: 1.5 }}>{strength}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="card" style={{ borderLeft: '4px solid #D97706' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#D97706' }}>
-                <AlertTriangle size={20} />
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'inherit' }}>
-                  Identified Gaps & SLA Turnaround Considerations
-                </h3>
-              </div>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '14px', padding: 0, margin: 0 }}>
-                {creator.matchGaps?.map((gap, idx) => (
-                  <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.92rem' }}>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#FFFBEB', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
-                      !
-                    </div>
-                    <span style={{ color: 'var(--ink-black)', lineHeight: 1.5 }}>{gap}</span>
-                  </li>
-                ))}
-              </ul>
-              <div style={{ marginTop: '18px', background: '#FFFBEB', padding: '12px 14px', borderRadius: 'var(--radius-sm)', fontSize: '0.84rem', color: '#92400E' }}>
-                <strong>Procurement Tip:</strong> Include a 3-5 business day review buffer when submitting your proposal milestones.
-              </div>
-            </div>
-          </div>
-
-          {/* Past Commercial Milestones */}
-          <div className="card">
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Briefcase size={20} color="var(--electric-teal)" />
-              Commercial Brand Experience
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ padding: '16px', background: 'var(--warm-ivory-light)', borderRadius: 'var(--radius-md)', border: '1px solid var(--soft-border)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0 }}>Global Brand Commercials & Spec Releases</h4>
-                  <span style={{ fontSize: '0.82rem', color: 'var(--muted-gray)', fontWeight: 600 }}>52 Completed Deliverables</span>
-                </div>
-                <p style={{ fontSize: '0.88rem', color: 'var(--muted-gray)', margin: 0, lineHeight: 1.5 }}>
-                  Delivered multi-scene visual assets, commercial fashion lookbooks, and high-coherence product videos across major consumer brand categories.
-                </p>
-              </div>
-
-              <div style={{ padding: '16px', background: 'var(--warm-ivory-light)', borderRadius: 'var(--radius-md)', border: '1px solid var(--soft-border)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0 }}>Cryptographic Audit Provenance</h4>
-                  <span style={{ fontSize: '0.82rem', color: '#059669', fontWeight: 700 }}>100% C2PA Verified</span>
-                </div>
-                <p style={{ fontSize: '0.88rem', color: 'var(--muted-gray)', margin: 0, lineHeight: 1.5 }}>
-                  All delivered generative assets include verified node graphs, parameter hashes, and license certificates for enterprise IP safety.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '20px', textAlign: 'right' }}>
-              <button
-                onClick={() => setIsCollabModalOpen(true)}
-                className="btn btn-primary"
-              >
-                <Send size={16} />
-                <span>Send Proposal to {creator.name}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: PORTFOLIO & WORK */}
-      {activeTab === 'portfolio' && (
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px', marginBottom: '32px' }}>
-            {creator.portfolio.map((item) => (
-              <div
-                key={item.id}
-                className="card card-hover"
-                style={{ padding: 0, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
-                onClick={() => setSelectedPortfolioItem(item)}
-              >
-                <div style={{ position: 'relative', height: '230px', background: '#121212' }}>
-                  <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    left: '12px',
-                    background: 'var(--electric-teal)',
-                    color: 'var(--ink-black)',
-                    padding: '3px 10px',
-                    borderRadius: '9999px',
-                    fontSize: '0.7rem',
-                    fontWeight: 800
-                  }}>
-                    {item.category}
-                  </div>
-                  <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    background: 'rgba(18,18,18,0.85)',
-                    color: 'var(--white)',
-                    padding: '3px 10px',
-                    borderRadius: '9999px',
-                    fontSize: '0.7rem',
-                    fontWeight: 700
-                  }}>
-                    {item.evidenceType}
-                  </div>
-                </div>
-
-                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '8px' }}>
-                    {item.title}
-                  </h3>
-                  <p style={{ fontSize: '0.88rem', color: 'var(--muted-gray)', marginBottom: '14px', lineHeight: 1.5, flex: 1 }}>
-                    {item.description}
-                  </p>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                    {item.tools.map((t, idx) => (
-                      <span key={idx} className="badge badge-teal" style={{ fontSize: '0.72rem' }}>{t}</span>
-                    ))}
-                  </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPortfolioItem(item);
-                    }}
-                    className="btn btn-outline btn-sm"
-                    style={{ width: '100%', justifyContent: 'center' }}
-                  >
-                    <span>Inspect Prompt & Node Recipe</span>
-                    <ExternalLink size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Proposal Banner at bottom of portfolio */}
+          {/* Match Score & Starting Price Pill */}
           <div style={{
-            background: 'var(--ink-black)',
-            color: 'var(--white)',
+            backgroundColor: 'var(--bg-secondary)',
+            padding: '16px 20px',
             borderRadius: 'var(--radius-lg)',
-            padding: '32px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '20px'
+            border: '1px solid var(--border-light)',
+            textAlign: 'right'
           }}>
-            <div>
-              <h3 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0, color: 'var(--white)' }}>
-                Like {creator.name}'s portfolio style?
-              </h3>
-              <p style={{ color: '#AAA', fontSize: '0.9rem', margin: '4px 0 0' }}>
-                Submit a campaign brief proposal and secure your project milestones in escrow.
-              </p>
+            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>
+              Starting Rate
             </div>
-            <button
-              onClick={() => setIsCollabModalOpen(true)}
-              className="btn btn-primary"
-              style={{ fontWeight: 800, padding: '12px 24px' }}
-            >
-              <Send size={16} />
-              <span>Send Project Proposal</span>
-            </button>
+            <div style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--primary)', lineHeight: 1.2 }}>
+              ${creator.startingPrice}
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+              ${creator.hourlyRate}/hr approx.
+            </div>
+            <div style={{ marginTop: '8px' }}>
+              <MatchScoreBadge score={creator.matchScore || 98} />
+            </div>
           </div>
         </div>
-      )}
 
-      {/* TAB 4: AUDITED PROVENANCE EVIDENCE */}
-      {activeTab === 'evidence' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {creatorEvidence.map((ev) => (
-            <div key={ev.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-              <div style={{ maxWidth: '750px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>{ev.claimTitle}</h4>
-                  <EvidenceBadge status={ev.status} size="small" />
+        {/* Bio */}
+        <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: '20px' }}>
+          {creator.bio}
+        </p>
+
+        {/* Tools & Skills Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', paddingTop: '18px', borderTop: '1px solid var(--border-light)' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '8px' }}>
+              Mastered AI Tools & Models:
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {creator.tools.map((t, idx) => (
+                <span key={idx} className="badge badge-indigo">
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '8px' }}>
+              Core Technical Skills:
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {creator.skills.map((s, idx) => (
+                <span key={idx} className="badge badge-gray">
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Profile Detail Navigation Tabs */}
+      <div style={{
+        display: 'flex',
+        borderBottom: '1px solid var(--border-light)',
+        marginBottom: '28px',
+        gap: '24px'
+      }}>
+        {[
+          { id: 'portfolio', label: `AI Portfolios & Renders (${creator.portfolio?.length || 0})` },
+          { id: 'workflow', label: 'Workflows & Proofs' },
+          { id: 'experience', label: 'Experience & Achievements' },
+          { id: 'terms', label: 'Commercial Terms & Licensing' }
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              padding: '12px 4px',
+              background: 'none',
+              border: 'none',
+              borderBottom: activeTab === tab.id ? '2px solid var(--primary)' : '2px solid transparent',
+              color: activeTab === tab.id ? 'var(--primary)' : 'var(--text-muted)',
+              fontWeight: activeTab === tab.id ? 700 : 500,
+              fontSize: '0.925rem',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* TAB 1: AI Portfolios & Renders Grid */}
+      {activeTab === 'portfolio' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          {(creator.portfolio || []).map((item) => (
+            <div
+              key={item.id}
+              className="card card-hover"
+              onClick={() => setSelectedPortfolioItem(item)}
+              style={{ padding: 0, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF' }}
+            >
+              <div style={{ position: 'relative', height: '220px', backgroundColor: '#0F172A' }}>
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '12px',
+                  backgroundColor: 'rgba(15, 23, 42, 0.75)',
+                  color: '#FFFFFF',
+                  padding: '3px 10px',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.7rem',
+                  fontWeight: 700
+                }}>
+                  {item.category}
                 </div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--ink-black)', marginBottom: '8px', lineHeight: 1.5 }}>
-                  {ev.claimDescription}
-                </p>
-                <div style={{ fontSize: '0.82rem', color: 'var(--muted-gray)' }}>
-                  Audit Hash: <span style={{ fontFamily: 'monospace', color: 'var(--ink-black)' }}>{ev.hash || 'Verified by C2PA standard'}</span>
+
+                <div style={{
+                  position: 'absolute',
+                  bottom: '12px',
+                  right: '12px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  color: 'var(--primary)',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: 'var(--shadow-sm)'
+                }}>
+                  <Play size={14} fill="currentColor" style={{ marginLeft: '2px' }} />
                 </div>
               </div>
 
-              {ev.evidenceUrl && (
-                <a href={ev.evidenceUrl} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
-                  <span>Verify Link</span>
-                  <ExternalLink size={14} />
-                </a>
-              )}
+              <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, marginBottom: '6px', color: 'var(--text-primary)' }}>
+                  {item.title}
+                </h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5, marginBottom: '14px', flex: 1 }}>
+                  {item.description}
+                </p>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '14px' }}>
+                  {item.tools.map((t, idx) => (
+                    <span key={idx} className="badge badge-gray" style={{ fontSize: '0.7rem' }}>
+                      {t}
+                    </span>
+                  ))}
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '0.75rem',
+                  color: '#059669',
+                  backgroundColor: '#ECFDF5',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #A7F3D0'
+                }}>
+                  <ShieldCheck size={14} />
+                  <span>{item.evidenceType}</span>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* TAB 5: PRICING & LICENSING TERMS */}
-      {activeTab === 'pricing' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '24px' }}>
-          <div className="card" style={{ border: '2px solid var(--electric-teal)' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '6px' }}>
-              Standard Deliverable Package
-            </h3>
-            <div style={{ fontSize: '2.2rem', fontWeight: 800, margin: '12px 0', color: 'var(--ink-black)' }}>
-              ${creator.startingPrice} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--muted-gray)' }}>/ deliverable pack</span>
-            </div>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9rem', marginBottom: '24px', padding: 0 }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <CheckCircle2 size={16} color="var(--electric-teal)" />
-                <span>Full commercial usage rights included</span>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <CheckCircle2 size={16} color="var(--electric-teal)" />
-                <span>Source LoRA & ComfyUI workflow delivered</span>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <CheckCircle2 size={16} color="var(--electric-teal)" />
-                <span>2 Free revision rounds included</span>
-              </li>
-            </ul>
-            <button
-              onClick={() => setIsCollabModalOpen(true)}
-              className="btn btn-primary"
-              style={{ width: '100%', fontWeight: 800 }}
-            >
-              <Send size={16} />
-              <span>Send Campaign Proposal</span>
-            </button>
-          </div>
+      {/* TAB 2: Workflows & Node Graphs */}
+      {activeTab === 'workflow' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {(creator.portfolio || []).map((item) => (
+            <div key={item.id} className="card" style={{ padding: '24px', backgroundColor: '#FFFFFF' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    {item.title}
+                  </h3>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    Tools: {item.tools.join(' • ')}
+                  </div>
+                </div>
+                <span className="badge badge-verified">
+                  <ShieldCheck size={13} />
+                  <span>{item.evidenceType}</span>
+                </span>
+              </div>
 
-          <div className="card">
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '16px' }}>
-              Declared Licensing & Usage Terms
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.9rem' }}>
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--muted-gray)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Commercial Rights</div>
-                <div style={{ fontWeight: 600, marginTop: '2px' }}>{creator.usageTerms.commercialRights}</div>
+              <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '16px', borderRadius: 'var(--radius-md)', marginBottom: '16px' }}>
+                <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '6px' }}>
+                  Prompt Deconstruction & Seeds:
+                </div>
+                <code style={{ fontSize: '0.85rem', color: 'var(--text-primary)', wordBreak: 'break-word', fontFamily: 'monospace' }}>
+                  "{item.promptSummary}"
+                </code>
               </div>
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--muted-gray)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Model Weights & Checkpoints</div>
-                <div style={{ fontWeight: 600, marginTop: '2px' }}>{creator.usageTerms.modelWeights}</div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.825rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Cryptographic Workflow Hash: <strong>#0x8a92f...c3d</strong></span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPortfolioItem(item)}
+                  className="btn btn-outline btn-sm"
+                >
+                  <span>Inspect Full Node Graph</span>
+                  <ExternalLink size={13} />
+                </button>
               </div>
-              <div>
-                <div style={{ fontWeight: 700, color: 'var(--muted-gray)', fontSize: '0.78rem', textTransform: 'uppercase' }}>Attribution</div>
-                <div style={{ fontWeight: 600, marginTop: '2px' }}>{creator.usageTerms.attribution}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* TAB 3: Experience & Previous Work */}
+      {activeTab === 'experience' && (
+        <div className="card" style={{ padding: '28px', backgroundColor: '#FFFFFF' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '18px', color: 'var(--text-primary)' }}>
+            Track Record & Past Client Work
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ borderLeft: '3px solid var(--primary)', paddingLeft: '16px' }}>
+              <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>
+                Sephora & Velora Paris Commercial Campaign
+              </div>
+              <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                Lead Generative Art Director • 2025
+              </div>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                Delivered 12x 8K photorealistic product renders and 4x 30-second fluid dynamics commercials with full brand LoRA weights.
+              </p>
+            </div>
+
+            <div style={{ borderLeft: '3px solid var(--primary)', paddingLeft: '16px' }}>
+              <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>
+                AI International Short Film Festival
+              </div>
+              <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                Best Visual Direction Award • 2025
+              </div>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                Awarded for temporal consistency across 18 generative scenes using Sora and ComfyUI.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: Commercial Terms & Licensing */}
+      {activeTab === 'terms' && (
+        <div className="card" style={{ padding: '28px', backgroundColor: '#FFFFFF' }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '18px', color: 'var(--text-primary)' }}>
+            Commercial Rights & Deliverable Terms
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '18px' }}>
+            <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>
+                Commercial Rights
+              </div>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', marginTop: '4px' }}>
+                {creator.usageTerms?.commercialRights || 'Full Global Commercial Buyout Included'}
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>
+                Model Weights & LoRAs
+              </div>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', marginTop: '4px' }}>
+                {creator.usageTerms?.modelWeights || 'Trained Brand LoRA weights delivered upon completion'}
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>
+                Category Exclusivity
+              </div>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', marginTop: '4px' }}>
+                {creator.usageTerms?.exclusivity || 'Available upon request (+20% fee)'}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Interactive Portfolio Item Modal */}
+      {/* Portfolio Item Detail Modal */}
       {selectedPortfolioItem && (
         <Modal
-          isOpen={Boolean(selectedPortfolioItem)}
+          isOpen={true}
           onClose={() => setSelectedPortfolioItem(null)}
           title={selectedPortfolioItem.title}
-          subtitle={`Case Study — ${selectedPortfolioItem.category}`}
-          maxWidth="720px"
         >
-          <div style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: '20px', background: '#000' }}>
-            <img
-              src={selectedPortfolioItem.image}
-              alt={selectedPortfolioItem.title}
-              style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '16px' }}>
-            <h4 style={{ fontSize: '0.85rem', color: 'var(--muted-gray)', textTransform: 'uppercase', marginBottom: '6px' }}>
-              Generation Prompt & Workflow Seed
-            </h4>
-            <p style={{ fontSize: '0.88rem', fontFamily: 'monospace', background: 'var(--warm-ivory-light)', padding: '12px', borderRadius: 'var(--radius-sm)', color: 'var(--ink-black)', lineHeight: 1.5 }}>
-              "{selectedPortfolioItem.promptSummary}"
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--soft-border)', paddingTop: '16px' }}>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {selectedPortfolioItem.tools.map((t, idx) => (
-                <span key={idx} className="badge badge-teal">{t}</span>
-              ))}
+          <div style={{ padding: '4px 0' }}>
+            <div style={{ width: '100%', height: '300px', backgroundColor: '#0F172A', borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: '18px' }}>
+              <img
+                src={selectedPortfolioItem.image}
+                alt={selectedPortfolioItem.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
             </div>
 
-            <button
-              onClick={() => {
-                setSelectedPortfolioItem(null);
-                setIsCollabModalOpen(true);
-              }}
-              className="btn btn-primary btn-sm"
-              style={{ fontWeight: 800 }}
-            >
-              <Send size={14} />
-              <span>Send Proposal Based on this Work</span>
-            </button>
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+                Generation Description & Creative Workflow:
+              </div>
+              <p style={{ fontSize: '0.925rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginTop: '4px' }}>
+                {selectedPortfolioItem.description}
+              </p>
+            </div>
+
+            <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '14px', borderRadius: '8px', marginBottom: '16px' }}>
+              <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '4px' }}>
+                Verified Generation Prompt:
+              </div>
+              <code style={{ fontSize: '0.85rem', color: 'var(--text-primary)' }}>
+                "{selectedPortfolioItem.promptSummary}"
+              </code>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="badge badge-verified">
+                <ShieldCheck size={14} />
+                <span>{selectedPortfolioItem.evidenceType}</span>
+              </span>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedPortfolioItem(null);
+                  setIsCollabModalOpen(true);
+                }}
+                className="btn btn-primary"
+              >
+                <Send size={15} />
+                <span>Invite to Project</span>
+              </button>
+            </div>
           </div>
         </Modal>
       )}
 
-      {/* Comprehensive Proposal Modal */}
-      <Modal
-        isOpen={isCollabModalOpen}
-        onClose={() => setIsCollabModalOpen(false)}
-        title={`Send Campaign Proposal to ${creator.name}`}
-        subtitle="Funds will be securely locked in CreatorProof Escrow until you approve deliverables."
-        maxWidth="650px"
-      >
-        <form onSubmit={handleSendProposal}>
-          <div className="form-group">
-            <label className="form-label">Link Active Campaign Brief</label>
-            <select
-              className="form-select"
-              value={proposalCampaignId}
-              onChange={(e) => {
-                setProposalCampaignId(e.target.value);
-                const camp = campaigns.find(c => c.id === e.target.value);
-                if (camp) {
-                  setProposalTitle(`Campaign Collaboration: ${camp.title}`);
-                  setProposalBudget(camp.budget);
-                }
-              }}
-            >
-              {campaigns.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.title} (${c.budget})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Proposal Title</label>
-            <input
-              type="text"
-              className="form-input"
-              value={proposalTitle}
-              onChange={(e) => setProposalTitle(e.target.value)}
-              required
-            />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+      {/* Send Proposal / Invitation Modal */}
+      {isCollabModalOpen && (
+        <Modal
+          isOpen={true}
+          onClose={() => setIsCollabModalOpen(false)}
+          title={`Invite ${creator.name} to Project`}
+        >
+          <form onSubmit={handleSendProposal}>
             <div className="form-group">
-              <label className="form-label">Offered Escrow Budget ($ USD)</label>
+              <label className="form-label">Select Campaign Brief:</label>
+              <select
+                className="form-select"
+                value={proposalCampaignId}
+                onChange={(e) => setProposalCampaignId(e.target.value)}
+              >
+                {campaigns.map((c) => (
+                  <option key={c.id} value={c.id}>{c.title} (${c.budget})</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Offered Escrow Budget ($ USD):</label>
               <input
                 type="number"
                 className="form-input"
                 value={proposalBudget}
                 onChange={(e) => setProposalBudget(e.target.value)}
-                required
               />
             </div>
+
             <div className="form-group">
-              <label className="form-label">Target Delivery Timeline</label>
+              <label className="form-label">Project Timeline / Delivery Target:</label>
               <input
                 type="text"
                 className="form-input"
                 value={proposalTimeline}
                 onChange={(e) => setProposalTimeline(e.target.value)}
-                placeholder="e.g. 2 Weeks"
-                required
               />
             </div>
-          </div>
 
-          <div className="form-group">
-            <label className="form-label">Proposed Milestone Breakdown</label>
-            <textarea
-              className="form-textarea"
-              rows={3}
-              value={proposalMilestones}
-              onChange={(e) => setProposalMilestones(e.target.value)}
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label className="form-label">Invitation Pitch & Deliverables Summary:</label>
+              <textarea
+                className="form-textarea"
+                rows={4}
+                value={proposalMessage}
+                onChange={(e) => setProposalMessage(e.target.value)}
+              />
+            </div>
 
-          <div className="form-group">
-            <label className="form-label">Invitation Message & Project Scope</label>
-            <textarea
-              className="form-textarea"
-              rows={4}
-              value={proposalMessage}
-              onChange={(e) => setProposalMessage(e.target.value)}
-              required
-            />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
-            <button
-              type="button"
-              onClick={() => setIsCollabModalOpen(false)}
-              className="btn btn-outline"
-            >
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" style={{ fontWeight: 800 }}>
-              <Send size={16} />
-              <span>Submit & Send Proposal</span>
-            </button>
-          </div>
-        </form>
-      </Modal>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              <button
+                type="button"
+                onClick={() => setIsCollabModalOpen(false)}
+                className="btn btn-outline"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+              >
+                <Send size={15} />
+                <span>Send Collaboration Request</span>
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 };

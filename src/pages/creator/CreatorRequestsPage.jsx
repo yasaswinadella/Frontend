@@ -10,7 +10,10 @@ import {
   Briefcase,
   AlertCircle,
   Eye,
-  ArrowRight
+  ArrowRight,
+  DollarSign,
+  Building2,
+  Calendar
 } from 'lucide-react';
 
 export const CreatorRequestsPage = () => {
@@ -18,106 +21,144 @@ export const CreatorRequestsPage = () => {
     collaborationRequests,
     activeCreatorProfile,
     respondToRequest,
-    navigateTo
+    navigateTo,
+    addToast
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState('All'); // 'All' | 'Incoming' | 'Sent' | 'Counteroffer' | 'Accepted' | 'Declined'
+  const [activeTab, setActiveTab] = useState('All');
   const [selectedRequestForCounter, setSelectedRequestForCounter] = useState(null);
   const [counterBudget, setCounterBudget] = useState('');
   const [counterNotes, setCounterNotes] = useState('');
 
   const myRequests = collaborationRequests.filter(
-    (r) => r.creatorId === activeCreatorProfile.id
+    (r) => r.creatorId === activeCreatorProfile.id || r.type === 'Brand Invitation'
   );
 
   const filteredRequests = useMemo(() => {
     return myRequests.filter((req) => {
       if (activeTab === 'All') return true;
-      if (activeTab === 'Incoming') return req.type === 'Brand Invitation' && req.status === 'Incoming';
-      if (activeTab === 'Sent') return req.type === 'Creator Proposal' && req.status === 'Sent';
-      if (activeTab === 'Counteroffer') return req.status === 'Counteroffer';
+      if (activeTab === 'Incoming') return req.status === 'Incoming' || req.type === 'Brand Invitation';
       if (activeTab === 'Accepted') return req.status === 'Accepted';
       if (activeTab === 'Declined') return req.status === 'Declined';
+      if (activeTab === 'Counteroffer') return req.status === 'Counteroffer';
       return true;
     });
   }, [myRequests, activeTab]);
 
+  const handleAccept = (req) => {
+    respondToRequest(req.id, 'Accepted');
+    addToast({
+      title: 'Invitation Accepted!',
+      message: `Project created for "${req.campaignTitle}"! Escrow milestone initialized.`,
+      type: 'success'
+    });
+  };
+
+  const handleDecline = (req) => {
+    respondToRequest(req.id, 'Declined');
+    addToast({
+      title: 'Request Declined',
+      message: `Declined request from ${req.brandName}.`,
+      type: 'info'
+    });
+  };
+
   const handleCounterSubmit = (e) => {
     e.preventDefault();
     if (!selectedRequestForCounter) return;
+
     respondToRequest(selectedRequestForCounter.id, 'Counteroffer', {
       counterBudget: Number(counterBudget),
       counterNotes
     });
+
+    addToast({
+      title: 'Counteroffer Sent',
+      message: `Counteroffer of $${counterBudget} sent to ${selectedRequestForCounter.brandName}.`,
+      type: 'success'
+    });
+
     setSelectedRequestForCounter(null);
   };
 
   return (
     <div className="page-content animate-fade-in">
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--muted-gray)', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', marginBottom: '6px' }}>
-            <Inbox size={16} color="var(--electric-teal)" />
-            <span>Collaboration Inbound & Outbound</span>
-          </div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0 }}>
-            Collaboration Requests & Invitations
-          </h1>
-          <p style={{ color: 'var(--muted-gray)', fontSize: '0.9rem', marginTop: '4px' }}>
-            Review brand invitations, manage submitted campaign proposals, and respond with custom counteroffers.
-          </p>
+      <div style={{ marginBottom: '28px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#7C3AED', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>
+          <Inbox size={15} />
+          <span>Brand Invitations & Opportunities</span>
         </div>
+        <h1 style={{ fontSize: '2.2rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+          Collaboration Invitations & Brief Requests
+        </h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '4px' }}>
+          Review direct brand invitations, accept funded project terms, or propose custom milestone counteroffers.
+        </p>
       </div>
 
       {/* Tabs */}
-      <div className="tab-list" style={{ marginBottom: '28px' }}>
-        {['All', 'Incoming', 'Sent', 'Counteroffer', 'Accepted', 'Declined'].map((tab) => (
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        {['All', 'Incoming', 'Accepted', 'Counteroffer', 'Declined'].map((tab) => (
           <button
             key={tab}
-            className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
+            type="button"
             onClick={() => setActiveTab(tab)}
+            style={{
+              padding: '8px 18px',
+              borderRadius: 'var(--radius-full)',
+              border: '1px solid',
+              borderColor: activeTab === tab ? '#7C3AED' : 'var(--border-light)',
+              backgroundColor: activeTab === tab ? 'var(--secondary-light)' : '#FFFFFF',
+              color: activeTab === tab ? '#6D28D9' : 'var(--text-secondary)',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
           >
             {tab}
           </button>
         ))}
       </div>
 
-      {/* Request Cards */}
+      {/* Requests List */}
       {filteredRequests.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <Inbox size={40} color="var(--muted-gray)" style={{ margin: '0 auto 16px' }} />
-          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px' }}>
-            No requests found in this view
+        <div className="card" style={{ textAlign: 'center', padding: '60px 20px', backgroundColor: '#FFFFFF' }}>
+          <Inbox size={40} color="var(--text-muted)" style={{ margin: '0 auto 16px' }} />
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '6px', color: 'var(--text-primary)' }}>
+            No invitations found in this tab
           </h3>
-          <p style={{ color: 'var(--muted-gray)', fontSize: '0.9rem' }}>
-            Check other tabs or browse open campaigns to submit proposals.
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            Check other tabs or explore open brand briefs in the marketplace.
           </p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           {filteredRequests.map((req) => (
             <div
               key={req.id}
-              className="card card-hover"
+              className="card"
               style={{
                 padding: '24px',
+                backgroundColor: '#FFFFFF',
                 borderLeft:
                   req.status === 'Accepted' ? '4px solid #059669' :
                   req.status === 'Counteroffer' ? '4px solid #D97706' :
-                  req.status === 'Incoming' ? '4px solid var(--electric-teal)' : '1px solid var(--soft-border)'
+                  req.status === 'Incoming' ? '4px solid #7C3AED' : '4px solid var(--border-light)'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px', marginBottom: '12px' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--muted-gray)', fontWeight: 600 }}>{req.brandName}</span>
-                    <span style={{ color: 'var(--soft-border)' }}>•</span>
-                    <span style={{ fontSize: '0.75rem', background: 'var(--warm-ivory-light)', border: '1px solid var(--soft-border)', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                    <Building2 size={15} color="var(--primary)" />
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 700 }}>{req.brandName}</span>
+                    <span style={{ color: 'var(--border-light)' }}>•</span>
+                    <span className="badge badge-indigo" style={{ fontSize: '0.7rem' }}>
                       {req.type}
                     </span>
                   </div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
                     {req.campaignTitle}
                   </h3>
                 </div>
@@ -127,99 +168,99 @@ export const CreatorRequestsPage = () => {
                   fontWeight: 700,
                   padding: '4px 12px',
                   borderRadius: 'var(--radius-full)',
-                  background:
+                  backgroundColor:
                     req.status === 'Accepted' ? '#ECFDF5' :
                     req.status === 'Counteroffer' ? '#FFFBEB' :
-                    req.status === 'Incoming' ? '#EFF6FF' : 'var(--warm-ivory-light)',
+                    req.status === 'Incoming' ? 'var(--secondary-light)' : 'var(--bg-secondary)',
                   color:
                     req.status === 'Accepted' ? '#059669' :
                     req.status === 'Counteroffer' ? '#D97706' :
-                    req.status === 'Incoming' ? '#2563EB' : 'var(--ink-black)',
+                    req.status === 'Incoming' ? '#7C3AED' : 'var(--text-secondary)',
                   border: '1px solid currentColor'
                 }}>
-                  {req.status}
+                  {req.status === 'Incoming' ? 'Action Required: Pending Response' : req.status}
                 </span>
               </div>
 
-              {/* Message */}
-              <div style={{ background: 'var(--warm-ivory-light)', padding: '12px 16px', borderRadius: 'var(--radius-md)', marginBottom: '16px', fontSize: '0.88rem' }}>
-                <strong>Message:</strong> "{req.message}"
+              {/* Message from Brand */}
+              <div style={{ backgroundColor: 'var(--bg-secondary)', padding: '12px 16px', borderRadius: 'var(--radius-md)', marginBottom: '16px', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                <strong>Client Message:</strong> "{req.message}"
               </div>
 
-              {/* Counteroffer Box */}
-              {req.status === 'Counteroffer' && (
-                <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '12px 16px', borderRadius: 'var(--radius-md)', marginBottom: '16px', color: '#92400E', fontSize: '0.85rem' }}>
-                  <strong>Counteroffer in Review:</strong> ${req.counterBudget} — {req.counterNotes}
+              {/* Counteroffer details if any */}
+              {req.status === 'Counteroffer' && req.counterBudget && (
+                <div style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', padding: '12px 16px', borderRadius: 'var(--radius-md)', marginBottom: '16px', fontSize: '0.88rem', color: '#92400E' }}>
+                  <strong>Proposed Counteroffer:</strong> ${req.counterBudget} USD • "{req.counterNotes}"
                 </div>
               )}
 
-              {/* Deliverables & Budget */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', fontSize: '0.85rem', marginBottom: '18px' }}>
-                <div>
-                  <span style={{ color: 'var(--muted-gray)' }}>Deliverables:</span>
-                  <div style={{ fontWeight: 600, marginTop: '2px' }}>{req.deliverables}</div>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--muted-gray)' }}>Target Deadline:</span>
-                  <div style={{ fontWeight: 600, marginTop: '2px' }}>{req.deadline}</div>
-                </div>
-                <div>
-                  <span style={{ color: 'var(--muted-gray)' }}>Escrow Budget:</span>
-                  <div style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--ink-black)' }}>
-                    ${req.counterBudget || req.budget}
+              {/* Deliverables & Budget Bar */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '12px',
+                paddingTop: '16px',
+                borderTop: '1px solid var(--border-light)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                  <div>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Offered Escrow: </span>
+                    <span style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--primary)' }}>${req.budget}</span>
+                  </div>
+                  <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                    Target Delivery: <strong>{req.deadline}</strong>
                   </div>
                 </div>
-              </div>
 
-              {/* Actions */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid var(--soft-border)', paddingTop: '16px', flexWrap: 'wrap' }}>
-                {req.status === 'Accepted' && (
-                  <button
-                    onClick={() => navigateTo('creator-projects', { projectId: req.projectId || 'proj-101' })}
-                    className="btn btn-primary btn-sm"
-                  >
-                    <Briefcase size={14} />
-                    <span>Open Project Workspace</span>
-                  </button>
-                )}
-
+                {/* Actions for Incoming Invitations */}
                 {req.status === 'Incoming' && (
-                  <>
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     <button
-                      onClick={() => respondToRequest(req.id, 'Decline')}
+                      type="button"
+                      onClick={() => handleDecline(req)}
                       className="btn btn-outline btn-sm"
-                      style={{ color: '#DC2626' }}
+                      style={{ color: '#EF4444' }}
                     >
                       <XCircle size={14} />
                       <span>Decline</span>
                     </button>
+
                     <button
+                      type="button"
                       onClick={() => {
                         setSelectedRequestForCounter(req);
-                        setCounterBudget(req.budget * 1.15);
+                        setCounterBudget(req.budget + 800);
+                        setCounterNotes('Includes 2 extra 4K variation cuts and trained LoRA weights checkpoint archive.');
                       }}
                       className="btn btn-outline btn-sm"
                     >
                       <RefreshCw size={14} />
                       <span>Counteroffer</span>
                     </button>
+
                     <button
-                      onClick={() => respondToRequest(req.id, 'Accept')}
+                      type="button"
+                      onClick={() => handleAccept(req)}
                       className="btn btn-primary btn-sm"
+                      style={{ backgroundColor: '#059669', borderColor: '#059669', fontWeight: 700 }}
                     >
                       <CheckCircle2 size={14} />
-                      <span>Accept Invitation (${req.budget})</span>
+                      <span>Accept Invitation & Start Project</span>
                     </button>
-                  </>
+                  </div>
                 )}
 
-                {req.status === 'Sent' && (
+                {req.status === 'Accepted' && (
                   <button
-                    onClick={() => respondToRequest(req.id, 'Withdraw')}
+                    type="button"
+                    onClick={() => navigateTo('creator-projects')}
                     className="btn btn-outline btn-sm"
-                    style={{ color: '#DC2626' }}
+                    style={{ color: '#059669', borderColor: '#A7F3D0' }}
                   >
-                    Withdraw Proposal
+                    <Briefcase size={14} />
+                    <span>View Active Project Workspace</span>
                   </button>
                 )}
               </div>
@@ -229,51 +270,61 @@ export const CreatorRequestsPage = () => {
       )}
 
       {/* Counteroffer Modal */}
-      <Modal
-        isOpen={Boolean(selectedRequestForCounter)}
-        onClose={() => setSelectedRequestForCounter(null)}
-        title="Submit Counteroffer to Brand"
-        subtitle={`Adjust price and timeline terms for ${selectedRequestForCounter?.campaignTitle}.`}
-        maxWidth="500px"
-      >
-        <form onSubmit={handleCounterSubmit}>
-          <div className="form-group">
-            <label className="form-label">Proposed Budget (USD)</label>
-            <input
-              type="number"
-              className="form-input"
-              value={counterBudget}
-              onChange={(e) => setCounterBudget(e.target.value)}
-              required
-            />
-          </div>
+      {selectedRequestForCounter && (
+        <Modal
+          isOpen={true}
+          onClose={() => setSelectedRequestForCounter(null)}
+          title={`Submit Counteroffer to ${selectedRequestForCounter.brandName}`}
+        >
+          <form onSubmit={handleCounterSubmit}>
+            <div style={{ padding: '12px', backgroundColor: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', marginBottom: '16px' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{selectedRequestForCounter.campaignTitle}</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Initial Brand Budget: ${selectedRequestForCounter.budget}</div>
+            </div>
 
-          <div className="form-group">
-            <label className="form-label">Scope & Delivery Clarification Notes</label>
-            <textarea
-              className="form-textarea"
-              rows={3}
-              placeholder="e.g. Can include trained brand LoRA weights and 4K upscaling for $5,500..."
-              value={counterNotes}
-              onChange={(e) => setCounterNotes(e.target.value)}
-              required
-            />
-          </div>
+            <div className="form-group">
+              <label className="form-label">Proposed Counter Budget ($ USD):</label>
+              <input
+                type="number"
+                className="form-input"
+                value={counterBudget}
+                onChange={(e) => setCounterBudget(e.target.value)}
+                required
+              />
+            </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-            <button
-              type="button"
-              onClick={() => setSelectedRequestForCounter(null)}
-              className="btn btn-outline"
-            >
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-              Send Counteroffer
-            </button>
-          </div>
-        </form>
-      </Modal>
+            <div className="form-group">
+              <label className="form-label">Scope Enhancements & Rationale:</label>
+              <textarea
+                className="form-textarea"
+                rows={3}
+                value={counterNotes}
+                onChange={(e) => setCounterNotes(e.target.value)}
+                placeholder="Explain what additional value or deliverables are included in this counteroffer..."
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedRequestForCounter(null)}
+                className="btn btn-outline"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                style={{ backgroundColor: '#D97706', borderColor: '#D97706' }}
+              >
+                <span>Send Counteroffer</span>
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 };
+
+export default CreatorRequestsPage;

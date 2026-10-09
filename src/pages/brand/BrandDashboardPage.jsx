@@ -16,12 +16,13 @@ import {
   ShieldCheck,
   Scale,
   DollarSign,
-  Layers,
-  FileCheck2,
-  Calendar,
-  Lock,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Search,
+  Star,
+  Zap,
+  MoreVertical,
+  Activity
 } from 'lucide-react';
 
 export const BrandDashboardPage = () => {
@@ -32,7 +33,6 @@ export const BrandDashboardPage = () => {
     projects,
     collaborationRequests,
     shortlistedCreatorIds,
-    toggleShortlist,
     navigateTo,
     setSelectedCreatorId,
     setSelectedCampaignId,
@@ -43,479 +43,424 @@ export const BrandDashboardPage = () => {
   const activeProjects = projects.filter((p) => p.status === 'In Progress' || p.status === 'Submitted' || p.status === 'Revision Requested');
   const pendingRequests = collaborationRequests.filter((r) => r.status === 'Sent' || r.status === 'Counteroffer' || r.status === 'Incoming');
 
-  // Explainable AI Matches
-  const matchedCreators = [
+  // Explainable AI Recommended Creators
+  const recommendedCreators = creators.slice(0, 3);
+
+  // Recent Activity Feed
+  const recentActivities = [
     {
-      id: 'creator-1',
-      name: 'Elena Vance',
-      handle: '@elenavance_ai',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      title: 'Photorealistic Visuals & Synthetic Art Direction',
-      evidenceStatus: 'verified',
-      tools: ['ComfyUI', 'SDXL Pro', 'Magnific 4K', 'C2PA Signed'],
-      matchScore: 98,
-      rate: 'From $1,850 / project',
-      rationale: '98% aesthetic alignment with brand moodboard, 14 cryptographically verified commercial deliverables, verified C2PA seed lineage. Guaranteed SLA: 48-hour turn for initial batch renders.'
+      id: 'act-1',
+      type: 'proposal',
+      title: 'New proposal received from Sophia Chan',
+      subtitle: 'HydraPulse Luxury AI 30s Video Campaign ($4,500)',
+      time: '15 mins ago',
+      icon: <Send size={15} color="var(--primary)" />
     },
     {
-      id: 'creator-2',
-      name: 'Marcus Chen',
-      handle: '@marcus_vfx',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-      title: 'AI Video Generation & Dynamic Camera VFX',
-      evidenceStatus: 'evidence-linked',
-      tools: ['Runway Gen-3', 'Luma Ray 2', 'After Effects'],
-      matchScore: 94,
-      rate: 'Avg $2,400 video deliverable',
-      rationale: 'Motion optical flow precisely maps to your tempo keyframes. Scheduling Note: High demand creator; available pipeline slot opens in 10 calendar days.'
+      id: 'act-2',
+      type: 'milestone',
+      title: 'Milestone 2 deliverable ready for review',
+      subtitle: 'Silk Aura Virtual Lookbook • 4K Master Video Renders',
+      time: '2 hours ago',
+      icon: <CheckCircle2 size={15} color="#059669" />
+    },
+    {
+      id: 'act-3',
+      type: 'brief',
+      title: 'AI Brief Generated & Published',
+      subtitle: 'Aura Luxe 30s Instagram Jewellery Commercial ($4,800)',
+      time: '1 day ago',
+      icon: <Sparkles size={15} color="#7C3AED" />
     }
   ];
 
   return (
-    <div className="page-content animate-fade-in" style={{ padding: '28px 32px' }}>
-      {/* Top Tag & Welcome Header */}
+    <div className="page-content animate-fade-in">
+      {/* SaaS Top Welcome Header */}
       <div style={{ marginBottom: '28px' }}>
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '6px',
-          background: 'rgba(0, 214, 201, 0.12)',
-          border: '1px solid rgba(0, 214, 201, 0.35)',
-          padding: '4px 12px',
-          borderRadius: 'var(--radius-full)',
-          color: 'var(--electric-teal)',
-          fontSize: '0.75rem',
-          fontWeight: 700,
-          marginBottom: '12px',
-          letterSpacing: '0.04em'
-        }}>
-          <ShieldCheck size={14} />
-          <span>CRYPTOGRAPHICALLY AUDITED • C2PA Manifest v2.4 Active</span>
-        </div>
-
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, margin: 0, color: 'var(--ink-black)', letterSpacing: '-0.02em' }}>
-              Welcome back, {brandProfile.name || 'Apex Creative Studio'}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>
+              <ShieldCheck size={14} />
+              <span>Enterprise Brand Workspace</span>
+            </div>
+            <h1 style={{ fontSize: '1.95rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>
+              Welcome back, {brandProfile.name || 'Aura Luxe Jewels'}
             </h1>
-            <p style={{ color: 'var(--muted-gray)', fontSize: '0.95rem', marginTop: '4px' }}>
-              Enterprise Tier • <strong>{activeCampaigns.length} active generative pipelines</strong> running with <strong>98.4% cryptographic audit accuracy</strong>.
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '3px' }}>
+              Manage generative AI creator pipelines, review verified node workflows, and audit milestone escrow releases.
             </p>
           </div>
 
-          {/* Action CTAs */}
+          {/* SaaS Header Action Buttons */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
+              type="button"
+              onClick={() => navigateTo('ai-brief-builder')}
+              className="btn btn-outline"
+              style={{ borderColor: '#C7D2FE', color: 'var(--primary)', gap: '6px' }}
+            >
+              <Sparkles size={14} color="var(--primary)" />
+              <span>AI Brief Builder</span>
+            </button>
+            <button
+              type="button"
               onClick={() => navigateTo('explore-creators')}
-              className="btn btn-outline btn-sm"
-              style={{ background: 'var(--white)', fontWeight: 600 }}
+              className="btn btn-outline"
+              style={{ gap: '6px' }}
             >
-              <Sparkles size={14} color="var(--electric-teal)" />
-              <span>Explore Creators</span>
+              <Search size={14} />
+              <span>Discover Creators</span>
             </button>
             <button
-              onClick={() => navigateTo('brand-requests')}
-              className="btn btn-outline btn-sm"
-              style={{ background: 'var(--white)', fontWeight: 600 }}
-            >
-              <Send size={14} />
-              <span>View Requests</span>
-            </button>
-            <button
+              type="button"
               onClick={() => navigateTo('create-campaign')}
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary"
+              style={{ gap: '6px' }}
             >
               <PlusCircle size={15} />
-              <span>+ Create Campaign</span>
+              <span>+ New Brief</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* 4 Stat Metric Cards (Exact Reference Design) */}
+      {/* 4 SaaS Stat Metric Cards with Trend Pills */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: '18px',
-        marginBottom: '32px'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: '16px',
+        marginBottom: '28px'
       }}>
-        {/* Card 1: Active Campaigns */}
+        {/* Card 1: Total Creators Available */}
         <div
-          className="card card-hover"
+          className="stat-card"
+          onClick={() => navigateTo('explore-creators')}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="stat-label">
+            <span>Verified AI Creators</span>
+            <Users size={16} color="var(--primary)" />
+          </div>
+          <div className="stat-value">
+            {creators.length}
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>profiles</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span className="stat-trend positive">
+              <TrendingUp size={12} /> +18.4% this week
+            </span>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>100% audited</span>
+          </div>
+        </div>
+
+        {/* Card 2: Active Briefs */}
+        <div
+          className="stat-card"
           onClick={() => navigateTo('my-campaigns')}
-          style={{ cursor: 'pointer', padding: '20px 22px' }}
+          style={{ cursor: 'pointer' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted-gray)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Active Campaigns
+          <div className="stat-label">
+            <span>Active Brand Briefs</span>
+            <Briefcase size={16} color="#7C3AED" />
+          </div>
+          <div className="stat-value">
+            {activeCampaigns.length}
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>campaigns</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span className="stat-trend neutral">
+              {campaigns.length} lifetime briefs
             </span>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--warm-ivory-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Briefcase size={14} color="var(--ink-black)" />
-            </div>
-          </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--ink-black)', lineHeight: 1.1 }}>
-            {activeCampaigns.length} Live
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: 600, marginTop: '8px' }}>
-            + 2 in production, 1 drafting
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>98% match rate</span>
           </div>
         </div>
 
-        {/* Card 2: Shortlisted Talent */}
+        {/* Card 3: Applications Received */}
         <div
-          className="card card-hover"
-          onClick={() => navigateTo('shortlist-compare')}
-          style={{ cursor: 'pointer', padding: '20px 22px' }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted-gray)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Shortlisted Talent
-            </span>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--electric-teal-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={14} color="#008f87" />
-            </div>
-          </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--ink-black)', lineHeight: 1.1 }}>
-            {shortlistedCreatorIds.length || 8} Saved
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#008f87', fontWeight: 600, marginTop: '8px' }}>
-            Top 3% verified AI talent
-          </div>
-        </div>
-
-        {/* Card 3: Collaboration Requests */}
-        <div
-          className="card card-hover"
+          className="stat-card"
           onClick={() => navigateTo('brand-requests')}
-          style={{ cursor: 'pointer', padding: '20px 22px' }}
+          style={{ cursor: 'pointer' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted-gray)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Collaboration Requests
+          <div className="stat-label">
+            <span>Applications & Inquiries</span>
+            <Send size={16} color="#D97706" />
+          </div>
+          <div className="stat-value">
+            {collaborationRequests.length}
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>total</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span className="stat-trend positive" style={{ backgroundColor: '#FEF3C7', color: '#B45309' }}>
+              <Clock size={12} /> {pendingRequests.length} pending review
             </span>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: '#FFFBEB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ShieldCheck size={14} color="#D97706" />
-            </div>
-          </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--ink-black)', lineHeight: 1.1 }}>
-            4 Pending
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#D97706', fontWeight: 600, marginTop: '8px' }}>
-            2 awaiting reply, 2 counteroffers
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>Avg 4hr reply</span>
           </div>
         </div>
 
-        {/* Card 4: Active Escrow & Projects */}
+        {/* Card 4: Escrow & Active Projects */}
         <div
-          className="card card-hover"
+          className="stat-card"
           onClick={() => navigateTo('brand-projects')}
-          style={{ cursor: 'pointer', padding: '20px 22px' }}
+          style={{ cursor: 'pointer' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--muted-gray)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Active Escrow & Projects
+          <div className="stat-label">
+            <span>Active Escrow Projects</span>
+            <FolderKanban size={16} color="#059669" />
+          </div>
+          <div className="stat-value">
+            {activeProjects.length}
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)' }}>active</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+            <span className="stat-trend positive">
+              <ShieldCheck size={12} /> $14,200 Secured
             </span>
-            <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'var(--warm-ivory-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Lock size={14} color="var(--ink-black)" />
-            </div>
-          </div>
-          <div style={{ fontSize: '2.1rem', fontWeight: 800, color: 'var(--ink-black)', lineHeight: 1.1 }}>
-            2 Active
-          </div>
-          <div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: 600, marginTop: '8px' }}>
-            $4,850 locked in escrow
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>Milestone backed</span>
           </div>
         </div>
       </div>
 
-      {/* Main Two-Column Layout (Matches Reference Screenshot) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.8fr) minmax(0, 1.2fr)', gap: '28px', alignItems: 'start' }}>
-        {/* LEFT COLUMN: Explainable AI Matches & Active Campaigns Ledger */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Section Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* Main Grid: Recommended Creators + Activity Feed */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+        gap: '20px',
+        marginBottom: '28px'
+      }}>
+        {/* Left: Recommended Creators with Explainable AI Match */}
+        <div className="card" style={{ padding: '22px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800, fontSize: '1.25rem', color: 'var(--ink-black)' }}>
-                <span style={{ color: 'var(--electric-teal)' }}>✦</span>
-                <span>Explainable AI Matches</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sparkles size={15} color="var(--primary)" />
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                  Explainable AI Recommendations
+                </h2>
               </div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--muted-gray)', marginTop: '2px' }}>
-                Calibrated algorithmically against brief: <strong>"Cyberpunk Spring Launch 2026"</strong>
-              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', margin: '2px 0 0' }}>
+                Ranked by model stack, verified node proofs, and brand brief compatibility
+              </p>
             </div>
-
             <button
+              type="button"
               onClick={() => navigateTo('explore-creators')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--electric-teal)',
-                fontWeight: 700,
-                fontSize: '0.82rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}
+              className="btn btn-ghost btn-sm"
+              style={{ color: 'var(--primary)', fontWeight: 600 }}
             >
-              <span>View all 18 matches</span>
-              <ArrowRight size={14} />
+              <span>Explore All</span>
+              <ArrowRight size={13} />
             </button>
           </div>
 
-          {/* AI Match Cards */}
-          {matchedCreators.map((creator) => (
-            <div
-              key={creator.id}
-              className="card card-hover"
-              style={{ padding: '22px', border: '1px solid var(--soft-border)' }}
-            >
-              {/* Creator Top Row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {recommendedCreators.map((creator) => (
+              <div
+                key={creator.id}
+                onClick={() => {
+                  setSelectedCreatorId(creator.id);
+                  navigateTo('brand-creator-detail');
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 14px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-light)',
+                  boxShadow: 'var(--shadow-xs)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#C7D2FE';
+                  e.currentTarget.style.backgroundColor = 'var(--primary-light)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--border-light)';
+                  e.currentTarget.style.backgroundColor = '#FFFFFF';
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <img
                     src={creator.avatar}
                     alt={creator.name}
-                    style={{ width: '54px', height: '54px', borderRadius: '12px', objectFit: 'cover', border: '2px solid var(--electric-teal)' }}
+                    style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
                   />
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <h3
-                        onClick={() => navigateTo('brand-creator-detail', { creatorId: creator.id })}
-                        style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0, cursor: 'pointer' }}
-                      >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary)' }}>
                         {creator.name}
-                      </h3>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--muted-gray)' }}>{creator.handle}</span>
+                      </span>
                       <EvidenceBadge status={creator.evidenceStatus} size="small" />
                     </div>
-                    <div style={{ fontSize: '0.82rem', color: 'var(--muted-gray)', marginTop: '2px' }}>
-                      {creator.title}
-                    </div>
-                    {/* Tool Badges */}
-                    <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
-                      {creator.tools.map((t, idx) => (
-                        <span key={idx} style={{ background: 'var(--warm-ivory-light)', border: '1px solid var(--soft-border)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 600 }}>
-                          {t}
-                        </span>
-                      ))}
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {creator.specialization} • {creator.tools?.slice(0, 2).join(', ')}
                     </div>
                   </div>
                 </div>
 
-                {/* Match Score & Rate */}
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    background: 'rgba(0, 214, 201, 0.15)',
-                    border: '1px solid var(--electric-teal)',
-                    color: '#006b64',
-                    padding: '4px 12px',
-                    borderRadius: 'var(--radius-full)',
-                    fontWeight: 800,
-                    fontSize: '0.8rem'
-                  }}>
-                    <span>✦</span>
-                    <span>{creator.matchScore}% MATCH</span>
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--muted-gray)', marginTop: '4px' }}>
-                    {creator.rate}
+                  <MatchScoreBadge score={creator.matchScore || 98} size="small" />
+                  <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                    From ${creator.startingPrice}
                   </div>
                 </div>
               </div>
-
-              {/* Verification & Match Rationale Box */}
-              <div style={{
-                background: 'var(--warm-ivory-light)',
-                border: '1px solid var(--soft-border)',
-                borderRadius: 'var(--radius-md)',
-                padding: '12px 16px',
-                marginBottom: '16px'
-              }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--ink-black)', textTransform: 'uppercase', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Sparkles size={13} color="var(--electric-teal)" />
-                  <span>VERIFICATION & MATCH RATIONALE</span>
-                </div>
-                <p style={{ fontSize: '0.84rem', color: '#444', lineHeight: 1.45, margin: 0 }}>
-                  {creator.rationale}
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    onClick={() => toggleShortlist(creator.id)}
-                    className="btn btn-outline btn-sm"
-                    style={{ fontSize: '0.78rem', background: 'var(--white)' }}
-                  >
-                    <span>Shortlist</span>
-                  </button>
-                  <button
-                    onClick={() => navigateTo('shortlist-compare')}
-                    className="btn btn-outline btn-sm"
-                    style={{ fontSize: '0.78rem', background: 'var(--white)' }}
-                  >
-                    <span>Compare Specs</span>
-                  </button>
-                </div>
-
-                <button
-                  onClick={() => navigateTo('brand-creator-detail', { creatorId: creator.id })}
-                  className="btn btn-primary btn-sm"
-                >
-                  <span>Request Collab</span>
-                  <ArrowRight size={14} />
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {/* Active Campaigns Ledger Section */}
-          <div className="card" style={{ padding: '22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, margin: 0 }}>
-                Active Campaigns Ledger
-              </h3>
-              <button
-                onClick={() => navigateTo('my-campaigns')}
-                style={{ background: 'none', border: 'none', color: 'var(--electric-teal)', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer' }}
-              >
-                Open Campaign Manager
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {campaigns.slice(0, 2).map((c) => (
-                <div
-                  key={c.id}
-                  onClick={() => navigateTo('my-campaigns', { campaignId: c.id })}
-                  style={{
-                    padding: '12px 14px',
-                    borderRadius: 'var(--radius-sm)',
-                    background: 'var(--warm-ivory-light)',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#059669' }} />
-                    <span style={{ fontWeight: 700, fontSize: '0.88rem' }}>{c.title}</span>
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--muted-gray)' }}>
-                    ${c.budget} • <strong>{c.applicantsCount}</strong> proposals
-                  </div>
-                </div>
-              ))}
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Upcoming Deadlines & Collaboration Bids */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Upcoming Deadlines Widget */}
-          <div className="card" style={{ padding: '22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={16} color="var(--electric-teal)" />
-                <span>Upcoming Deadlines</span>
-              </h3>
-              <span style={{ fontSize: '0.72rem', background: '#FEF2F2', color: '#DC2626', padding: '2px 8px', borderRadius: '4px', fontWeight: 800 }}>
-                ACTION REQ
-              </span>
+        {/* Right: Real-time Activity Feed */}
+        <div className="card" style={{ padding: '22px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Activity size={15} color="#059669" />
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                Live Workspace Pipeline
+              </h2>
             </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {/* Item 1 */}
-              <div style={{ background: 'var(--warm-ivory-light)', padding: '14px', borderRadius: 'var(--radius-md)', borderLeft: '3px solid #DC2626' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#DC2626', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>
-                  <span>DUE IN 18 HOURS</span>
-                  <span>Milestone 1</span>
-                </div>
-                <h4 style={{ fontSize: '0.98rem', fontWeight: 800, margin: '2px 0 4px' }}>
-                  Aether Luxury Botanicals
-                </h4>
-                <p style={{ fontSize: '0.82rem', color: 'var(--muted-gray)', marginBottom: '10px', lineHeight: 1.4 }}>
-                  Sofia K. submitted 8 synthetic renders for concept sign-off.
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--ink-black)' }}>
-                    $1,400 pending
-                  </span>
-                  <button
-                    onClick={() => navigateTo('brand-projects', { projectId: 'proj-101' })}
-                    className="btn btn-primary btn-sm"
-                    style={{ fontSize: '0.75rem', padding: '5px 12px' }}
-                  >
-                    Review Milestone
-                  </button>
-                </div>
-              </div>
-
-              {/* Item 2 */}
-              <div style={{ background: 'var(--warm-ivory-light)', padding: '14px', borderRadius: 'var(--radius-md)', borderLeft: '3px solid #059669' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#059669', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>
-                  <span>DUE IN 4 DAYS</span>
-                  <span>Milestone 2</span>
-                </div>
-                <h4 style={{ fontSize: '0.98rem', fontWeight: 800, margin: '2px 0 4px' }}>
-                  Neon Kinetic Apparel
-                </h4>
-                <p style={{ fontSize: '0.82rem', color: 'var(--muted-gray)', marginBottom: '10px', lineHeight: 1.4 }}>
-                  Elena Vance: Generative asset training in progress.
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.82rem', color: 'var(--muted-gray)' }}>
-                    $3,200 Locked
-                  </span>
-                  <span style={{ fontSize: '0.78rem', color: '#059669', fontWeight: 700 }}>
-                    ● On Track
-                  </span>
-                </div>
-              </div>
-            </div>
+            <span className="badge badge-verified" style={{ fontSize: '0.68rem', padding: '2px 8px' }}>
+              <span className="badge-dot" style={{ backgroundColor: '#059669' }}></span> Realtime
+            </span>
           </div>
 
-          {/* Collaboration Bids / Counteroffers */}
-          <div className="card" style={{ padding: '22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>
-                Collaboration Bids
-              </h3>
-              <span style={{ fontSize: '0.75rem', color: 'var(--muted-gray)' }}>2 Counteroffers</span>
-            </div>
-
-            <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '14px', borderRadius: 'var(--radius-md)', marginBottom: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                <div>
-                  <div style={{ fontWeight: 800, fontSize: '0.92rem' }}>Sofia K.</div>
-                  <div style={{ fontSize: '0.72rem', color: '#B45309', fontWeight: 700 }}>Counteroffer Received</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 800, fontSize: '1rem', color: '#B45309' }}>$3,200</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--muted-gray)', textDecoration: 'line-through' }}>Orig $2,800</div>
-                </div>
-              </div>
-
-              <p style={{ fontSize: '0.8rem', color: '#78350F', lineHeight: 1.4, margin: '6px 0 10px' }}>
-                "Includes +2 additional 8K animated seamless loops formatted for vertical displays."
-              </p>
-
-              <button
-                onClick={() => navigateTo('brand-requests')}
-                className="btn btn-primary btn-sm"
-                style={{ width: '100%', fontSize: '0.78rem' }}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {recentActivities.map((act) => (
+              <div
+                key={act.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px',
+                  padding: '12px',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid var(--border-light)',
+                  boxShadow: 'var(--shadow-xs)'
+                }}
               >
-                Review Counteroffer Terms
-              </button>
-            </div>
+                <div style={{
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '6px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-light)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0
+                }}>
+                  {act.icon}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text-primary)' }}>
+                    {act.title}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    {act.subtitle}
+                  </div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-light)', marginTop: '4px' }}>
+                    {act.time}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
+      </div>
+
+      {/* SaaS Campaign Table Overview */}
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{
+          padding: '16px 22px',
+          borderBottom: '1px solid var(--border-light)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: '#FFFFFF'
+        }}>
+          <div>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+              Active Brand Briefs & Procurement Status
+            </h3>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0' }}>
+              Track proposal counts, target aspect ratios, and deadline countdowns
+            </p>
+          </div>
+          <button
+            onClick={() => navigateTo('my-campaigns')}
+            className="btn btn-outline btn-sm"
+          >
+            Manage All Briefs
+          </button>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table className="saas-table">
+            <thead>
+              <tr>
+                <th>Brief / Campaign Title</th>
+                <th>Content Category</th>
+                <th>Aspect Ratio</th>
+                <th>Budget (Escrow)</th>
+                <th>Required Tools</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {campaigns.slice(0, 3).map((camp) => (
+                <tr key={camp.id}>
+                  <td>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{camp.title}</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{camp.brandName} • Due in 2 weeks</div>
+                  </td>
+                  <td>
+                    <span className="badge badge-purple" style={{ fontSize: '0.7rem' }}>
+                      {camp.contentCategory}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="badge badge-gray" style={{ fontSize: '0.7rem' }}>
+                      {camp.aspectRatio || '16:9'}
+                    </span>
+                  </td>
+                  <td>
+                    <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>${camp.budget?.toLocaleString()}</div>
+                    <div style={{ fontSize: '0.68rem', color: '#059669', fontWeight: 600 }}>Escrow Ready</div>
+                  </td>
+                  <td>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      {camp.requiredTools?.slice(0, 2).join(', ') || 'Runway Gen-3, ComfyUI'}
+                    </div>
+                  </td>
+                  <td>
+                    <span className="badge badge-verified" style={{ fontSize: '0.7rem' }}>
+                      <span className="badge-dot" style={{ backgroundColor: '#059669' }}></span> Active
+                    </span>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        setSelectedCampaignId(camp.id);
+                        navigateTo('explore-creators');
+                      }}
+                      className="btn btn-outline btn-sm"
+                      style={{ fontSize: '0.75rem', padding: '4px 10px' }}
+                    >
+                      Find Matches
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   );
 };
+
+export default BrandDashboardPage;

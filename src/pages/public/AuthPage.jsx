@@ -3,74 +3,114 @@ import { useApp } from '../../context/AppContext';
 import {
   Sparkles,
   Building2,
+  Palette,
   ArrowRight,
   ShieldCheck,
   Lock,
   Mail,
-  Key,
-  CheckCircle,
-  HelpCircle
+  Eye,
+  EyeOff,
+  User,
+  CheckCircle2,
+  HelpCircle,
+  AlertCircle
 } from 'lucide-react';
 
 export const AuthPage = ({ defaultTab = 'signin', defaultRole = 'brand' }) => {
   const { switchRole, navigateTo, addToast } = useApp();
 
-  const [authMode, setAuthMode] = useState(defaultTab); // 'signin' | 'signup' | 'forgot' | 'reset'
+  const [authMode, setAuthMode] = useState(defaultTab); // 'signin' | 'signup' | 'forgot'
   const [selectedRole, setSelectedRole] = useState(defaultRole); // 'brand' | 'creator'
 
   // Form Fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+
+  const validate = () => {
+    const errors = {};
+    if (!email || !email.includes('@')) {
+      errors.email = 'Please enter a valid email address';
+    }
+    if (!password || password.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+    if (authMode === 'signup') {
+      if (!name.trim()) errors.name = 'Please enter your full name';
+      if (selectedRole === 'brand' && !companyName.trim()) {
+        errors.companyName = 'Please enter your brand or agency name';
+      }
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSignIn = (e) => {
     e.preventDefault();
+    if (!validate()) return;
     switchRole(selectedRole);
     addToast({
       title: `Welcome Back!`,
-      message: `Logged in successfully as ${selectedRole === 'brand' ? 'Acme Health & Tech' : 'Elena Rostova'}.`,
+      message: `Signed in successfully to ${selectedRole === 'brand' ? 'Brand Workspace' : 'Creator Workspace'}.`,
       type: 'success'
     });
   };
 
   const handleSignUp = (e) => {
     e.preventDefault();
+    if (!validate()) return;
     switchRole(selectedRole);
     addToast({
       title: `Account Created!`,
-      message: `Welcome to CreatorProof AI as a ${selectedRole === 'brand' ? 'Brand / Agency' : 'Verified AI Creator'}.`,
+      message: `Welcome to CreatorProof AI as a ${selectedRole === 'brand' ? 'Brand / Agency' : 'Verified AI Creator'}. Note: regular signup is not proof of verification.`,
       type: 'success'
     });
   };
 
   const handleForgot = (e) => {
     e.preventDefault();
+    if (!email || !email.includes('@')) {
+      setFormErrors({ email: 'Please enter a valid email address' });
+      return;
+    }
     addToast({
       title: 'Reset Link Dispatched',
-      message: `A password reset link was sent to ${email || 'your email address'}.`,
+      message: `A password reset link was sent to ${email}.`,
       type: 'info'
     });
     setAuthMode('signin');
   };
 
-  // Quick 1-Click Demo Logins
-  const loginAsDemoBrand = () => {
+  // Quick 1-Click Demo Logins for Hackathon Judges
+  const loginAsJewelleryBrand = () => {
     switchRole('brand');
     addToast({
-      title: 'Demo Session Activated',
-      message: 'Logged in as Acme Health & Tech (Brand Admin)',
+      title: 'Demo Session Active',
+      message: 'Logged in as Aura Luxe Jewels / Acme Brand Workspace',
+      type: 'success'
+    });
+  };
+
+  const loginAsSophiaCreator = () => {
+    switchRole('creator');
+    addToast({
+      title: 'Demo Session Active',
+      message: 'Logged in as Sophia Chan (Verified AI Luxury Specialist)',
       type: 'success'
     });
   };
 
   return (
     <div style={{
-      minHeight: 'calc(100vh - 120px)',
+      minHeight: 'calc(100vh - 72px - 200px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '40px 24px 80px'
+      padding: '48px 24px 80px',
+      backgroundColor: 'var(--bg-secondary)'
     }}>
       <div style={{ maxWidth: '480px', width: '100%' }}>
         {/* Logo and Intro */}
@@ -79,283 +119,326 @@ export const AuthPage = ({ defaultTab = 'signin', defaultRole = 'brand' }) => {
             width: '46px',
             height: '46px',
             borderRadius: '12px',
-            background: 'var(--ink-black)',
+            background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: '12px',
-            boxShadow: '0 4px 14px rgba(0, 214, 201, 0.3)'
+            boxShadow: 'var(--shadow-indigo)'
           }}>
-            <Sparkles size={24} color="var(--electric-teal)" />
+            <Sparkles size={24} color="#FFFFFF" />
           </div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '6px' }}>
-            {authMode === 'signin' && 'Welcome to CreatorProof AI'}
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '6px', color: 'var(--text-primary)' }}>
+            {authMode === 'signin' && 'Sign in to CreatorProof AI'}
             {authMode === 'signup' && 'Create Your Account'}
             {authMode === 'forgot' && 'Reset Your Password'}
           </h1>
-          <p style={{ color: 'var(--muted-gray)', fontSize: '0.9rem' }}>
-            {authMode === 'signin' && 'Sign in to manage your campaigns, proposals, and audited proofs.'}
-            {authMode === 'signup' && 'Select your role to access specialized brand or creator tools.'}
-            {authMode === 'forgot' && 'Enter your verified email to receive instructions.'}
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+            {authMode === 'signin' && 'Access your campaigns, portfolio, and milestone escrow dashboard.'}
+            {authMode === 'signup' && 'Select your role to access specialized brand or creator workflows.'}
+            {authMode === 'forgot' && 'Enter your registered email to receive password reset instructions.'}
           </p>
         </div>
 
-        {/* 1-Click Instant Demo Login Banner */}
+        {/* 1-Click Quick Demo Login Box for Judges */}
         <div className="card" style={{
-          background: 'radial-gradient(circle at top right, #1f2a29 0%, #121212 100%)',
-          color: 'var(--white)',
+          backgroundColor: '#FFFFFF',
           padding: '18px 20px',
           marginBottom: '24px',
-          border: '1px solid rgba(0, 214, 201, 0.4)'
+          border: '1.5px solid #C7D2FE',
+          boxShadow: 'var(--shadow-sm)'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--electric-teal)', fontWeight: 700, marginBottom: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px' }}>
             <Sparkles size={14} />
-            <span>ONE-CLICK DEMO LOGIN (EASY TEST DRIVE)</span>
+            <span>Hackathon Quick-Demo Login (Instant Access)</span>
           </div>
-          <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <button
-              onClick={loginAsDemoBrand}
+              type="button"
+              onClick={loginAsJewelleryBrand}
               className="btn btn-primary btn-sm"
-              style={{ fontSize: '0.78rem', width: '100%', justifyContent: 'center' }}
+              style={{ fontSize: '0.78rem', justifyContent: 'center' }}
             >
               <Building2 size={14} />
-              <span>Login as Brand</span>
+              <span>Brand Demo</span>
+            </button>
+            <button
+              type="button"
+              onClick={loginAsSophiaCreator}
+              className="btn btn-secondary btn-sm"
+              style={{ fontSize: '0.78rem', justifyContent: 'center', backgroundColor: '#7C3AED', color: '#FFFFFF', borderColor: '#7C3AED' }}
+            >
+              <Palette size={14} />
+              <span>Creator Demo</span>
             </button>
           </div>
         </div>
 
         {/* Main Auth Card */}
-        <div className="card" style={{ padding: '32px' }}>
-          {/* Auth Mode Toggle */}
+        <div className="card" style={{ padding: '32px', backgroundColor: '#FFFFFF' }}>
+          {/* Auth Mode Toggle (Sign In / Sign Up) */}
           {authMode !== 'forgot' && (
             <div style={{
               display: 'flex',
-              background: 'var(--warm-ivory-light)',
+              backgroundColor: 'var(--bg-secondary)',
               borderRadius: 'var(--radius-md)',
               padding: '4px',
-              marginBottom: '24px'
+              marginBottom: '24px',
+              border: '1px solid var(--border-light)'
             }}>
               <button
                 type="button"
-                onClick={() => setAuthMode('signin')}
+                onClick={() => { setAuthMode('signin'); setFormErrors({}); }}
                 style={{
                   flex: 1,
                   padding: '8px',
                   borderRadius: 'var(--radius-sm)',
                   border: 'none',
-                  background: authMode === 'signin' ? 'var(--white)' : 'transparent',
+                  backgroundColor: authMode === 'signin' ? '#FFFFFF' : 'transparent',
                   fontWeight: authMode === 'signin' ? 700 : 500,
-                  boxShadow: authMode === 'signin' ? 'var(--shadow-sm)' : 'none',
+                  boxShadow: authMode === 'signin' ? 'var(--shadow-xs)' : 'none',
                   cursor: 'pointer',
-                  color: 'var(--ink-black)',
-                  fontSize: '0.88rem'
+                  color: authMode === 'signin' ? 'var(--primary)' : 'var(--text-secondary)',
+                  fontSize: '0.875rem'
                 }}
               >
                 Sign In
               </button>
               <button
                 type="button"
-                onClick={() => setAuthMode('signup')}
+                onClick={() => { setAuthMode('signup'); setFormErrors({}); }}
                 style={{
                   flex: 1,
                   padding: '8px',
                   borderRadius: 'var(--radius-sm)',
                   border: 'none',
-                  background: authMode === 'signup' ? 'var(--white)' : 'transparent',
+                  backgroundColor: authMode === 'signup' ? '#FFFFFF' : 'transparent',
                   fontWeight: authMode === 'signup' ? 700 : 500,
-                  boxShadow: authMode === 'signup' ? 'var(--shadow-sm)' : 'none',
+                  boxShadow: authMode === 'signup' ? 'var(--shadow-xs)' : 'none',
                   cursor: 'pointer',
-                  color: 'var(--ink-black)',
-                  fontSize: '0.88rem'
+                  color: authMode === 'signup' ? 'var(--primary)' : 'var(--text-secondary)',
+                  fontSize: '0.875rem'
                 }}
               >
-                Sign Up
+                Create Account
               </button>
             </div>
           )}
 
-          {/* Role Picker (Brand vs Creator) */}
-          <div style={{ marginBottom: '22px' }}>
-            <label className="form-label" style={{ marginBottom: '8px' }}>
-              Choose Your Primary Account Role:
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <div
-                onClick={() => setSelectedRole('brand')}
-                style={{
-                  border: `2px solid ${selectedRole === 'brand' ? 'var(--electric-teal)' : 'var(--soft-border)'}`,
-                  background: selectedRole === 'brand' ? 'var(--electric-teal-subtle)' : 'var(--white)',
-                  padding: '14px 12px',
-                  borderRadius: 'var(--radius-md)',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <Building2 size={22} color={selectedRole === 'brand' ? 'var(--ink-black)' : 'var(--muted-gray)'} style={{ margin: '0 auto 6px' }} />
-                <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Brand / Agency</div>
-                <div style={{ fontSize: '0.74rem', color: 'var(--muted-gray)', marginTop: '2px' }}>Post briefs & hire verified creators</div>
-              </div>
+          {/* Role Selection Tabs */}
+          {authMode !== 'forgot' && (
+            <div style={{ marginBottom: '20px' }}>
+              <label className="form-label" style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                Select Workspace Role:
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole('brand')}
+                  style={{
+                    padding: '12px 10px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1.5px solid',
+                    borderColor: selectedRole === 'brand' ? 'var(--primary)' : 'var(--border-light)',
+                    backgroundColor: selectedRole === 'brand' ? 'var(--primary-light)' : '#FFFFFF',
+                    color: selectedRole === 'brand' ? 'var(--primary)' : 'var(--text-secondary)',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <Building2 size={18} />
+                  <span>Brand / Agency</span>
+                </button>
 
-              <div
-                onClick={() => setSelectedRole('creator')}
-                style={{
-                  border: `2px solid ${selectedRole === 'creator' ? 'var(--electric-teal)' : 'var(--soft-border)'}`,
-                  background: selectedRole === 'creator' ? 'var(--electric-teal-subtle)' : 'var(--white)',
-                  padding: '14px 12px',
-                  borderRadius: 'var(--radius-md)',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <Sparkles size={22} color={selectedRole === 'creator' ? 'var(--ink-black)' : 'var(--muted-gray)'} style={{ margin: '0 auto 6px' }} />
-                <div style={{ fontWeight: 800, fontSize: '0.9rem' }}>Customer / AI Creator</div>
-                <div style={{ fontSize: '0.74rem', color: 'var(--muted-gray)', marginTop: '2px' }}>Submit proposals & get paid via escrow</div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedRole('creator')}
+                  style={{
+                    padding: '12px 10px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1.5px solid',
+                    borderColor: selectedRole === 'creator' ? '#7C3AED' : 'var(--border-light)',
+                    backgroundColor: selectedRole === 'creator' ? 'var(--secondary-light)' : '#FFFFFF',
+                    color: selectedRole === 'creator' ? '#7C3AED' : 'var(--text-secondary)',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '4px',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <Palette size={18} />
+                  <span>AI Creator</span>
+                </button>
               </div>
             </div>
-          </div>
-
-          {/* SIGN IN FORM */}
-          {authMode === 'signin' && (
-            <form onSubmit={handleSignIn}>
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
-                <input
-                  type="email"
-                  className="form-input"
-                  placeholder="name@company.com"
-                  defaultValue={selectedRole === 'brand' ? 'marketing@acmehealth.tech' : 'elena@rostova.ai'}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <label className="form-label" style={{ margin: 0 }}>Password</label>
-                  <button
-                    type="button"
-                    onClick={() => setAuthMode('forgot')}
-                    style={{ background: 'none', border: 'none', color: 'var(--muted-gray)', fontSize: '0.78rem', cursor: 'pointer' }}
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-                <input
-                  type="password"
-                  className="form-input"
-                  placeholder="••••••••••••"
-                  defaultValue="password123"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: '100%', marginTop: '10px' }}
-              >
-                <span>Sign In to {selectedRole === 'brand' ? 'Brand Workspace' : 'Creator Workspace'}</span>
-                <ArrowRight size={16} />
-              </button>
-            </form>
           )}
 
-          {/* SIGN UP FORM */}
-          {authMode === 'signup' && (
-            <form onSubmit={handleSignUp}>
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="e.g. Alex Morgan"
-                  required
-                />
-              </div>
-
-              {selectedRole === 'brand' && (
+          {/* Form */}
+          <form onSubmit={authMode === 'signin' ? handleSignIn : (authMode === 'signup' ? handleSignUp : handleForgot)}>
+            {/* Signup extra fields */}
+            {authMode === 'signup' && (
+              <>
                 <div className="form-group">
-                  <label className="form-label">Company / Brand Name</label>
+                  <label className="form-label">Full Name</label>
                   <input
                     type="text"
                     className="form-input"
-                    placeholder="e.g. Acme Health & Tech"
-                    required
+                    placeholder="e.g. Alex Morgan"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                   />
+                  {formErrors.name && (
+                    <div style={{ color: '#EF4444', fontSize: '0.78rem', marginTop: '4px' }}>{formErrors.name}</div>
+                  )}
                 </div>
+
+                {selectedRole === 'brand' && (
+                  <div className="form-group">
+                    <label className="form-label">Brand / Agency Name</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Aura Luxe Jewels"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                    />
+                    {formErrors.companyName && (
+                      <div style={{ color: '#EF4444', fontSize: '0.78rem', marginTop: '4px' }}>{formErrors.companyName}</div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Email Field */}
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input
+                type="email"
+                className="form-input"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {formErrors.email && (
+                <div style={{ color: '#EF4444', fontSize: '0.78rem', marginTop: '4px' }}>{formErrors.email}</div>
               )}
+            </div>
 
+            {/* Password Field */}
+            {authMode !== 'forgot' && (
               <div className="form-group">
-                <label className="form-label">Work Email</label>
-                <input
-                  type="email"
-                  className="form-input"
-                  placeholder="name@company.com"
-                  required
-                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label className="form-label" style={{ margin: 0 }}>Password</label>
+                  {authMode === 'signin' && (
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode('forgot')}
+                      style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className="form-input"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    style={{ paddingRight: '40px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-muted)',
+                      cursor: 'pointer',
+                      padding: 0,
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {formErrors.password && (
+                  <div style={{ color: '#EF4444', fontSize: '0.78rem', marginTop: '4px' }}>{formErrors.password}</div>
+                )}
               </div>
+            )}
 
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <input
-                  type="password"
-                  className="form-input"
-                  placeholder="Minimum 8 characters"
-                  required
-                />
-              </div>
+            {/* Submit Action Button */}
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{
+                width: '100%',
+                padding: '12px',
+                fontSize: '0.95rem',
+                fontWeight: 700,
+                marginTop: '10px'
+              }}
+            >
+              {authMode === 'signin' && `Sign In as ${selectedRole === 'brand' ? 'Brand' : 'AI Creator'}`}
+              {authMode === 'signup' && `Create ${selectedRole === 'brand' ? 'Brand' : 'Creator'} Account`}
+              {authMode === 'forgot' && 'Send Reset Instructions'}
+            </button>
+          </form>
 
-              <div style={{ fontSize: '0.78rem', color: 'var(--muted-gray)', marginBottom: '18px', lineHeight: 1.4 }}>
-                By signing up, you agree to CreatorProof AI's Commercial Licensing Standard and Escrow Agreement.
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: '100%' }}
-              >
-                <span>Create {selectedRole === 'brand' ? 'Brand' : 'Creator'} Account</span>
-                <ArrowRight size={16} />
-              </button>
-            </form>
+          {/* Verification disclaimer */}
+          {authMode === 'signup' && (
+            <div style={{
+              marginTop: '18px',
+              padding: '10px 12px',
+              backgroundColor: 'var(--bg-secondary)',
+              borderRadius: '8px',
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '6px'
+            }}>
+              <AlertCircle size={14} color="var(--primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span>
+                Standard registration creates an unverified account. Creator verified badges require submitting reproducible ComfyUI workflows or C2PA provenance proofs.
+              </span>
+            </div>
           )}
 
-          {/* FORGOT PASSWORD FORM */}
           {authMode === 'forgot' && (
-            <form onSubmit={handleForgot}>
-              <div className="form-group">
-                <label className="form-label">Enter Account Email</label>
-                <input
-                  type="email"
-                  className="form-input"
-                  placeholder="name@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: '100%', marginBottom: '12px' }}
-              >
-                Send Password Reset Link
-              </button>
-
+            <div style={{ textAlign: 'center', marginTop: '18px' }}>
               <button
                 type="button"
                 onClick={() => setAuthMode('signin')}
-                className="btn btn-outline"
-                style={{ width: '100%' }}
+                style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
               >
                 Back to Sign In
               </button>
-            </form>
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 };
+
+export default AuthPage;
