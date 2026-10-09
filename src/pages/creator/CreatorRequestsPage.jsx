@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   XCircle,
   RefreshCw,
-  MessageSquare,
   Briefcase,
   AlertCircle,
   Eye,
@@ -175,22 +174,13 @@ export const CreatorRequestsPage = () => {
               {/* Actions */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid var(--soft-border)', paddingTop: '16px', flexWrap: 'wrap' }}>
                 {req.status === 'Accepted' && (
-                  <>
-                    <button
-                      onClick={() => navigateTo('creator-messages')}
-                      className="btn btn-outline btn-sm"
-                    >
-                      <MessageSquare size={14} />
-                      <span>Open Chat</span>
-                    </button>
-                    <button
-                      onClick={() => navigateTo('creator-projects', { projectId: req.projectId || 'proj-101' })}
-                      className="btn btn-primary btn-sm"
-                    >
-                      <Briefcase size={14} />
-                      <span>Open Project Workspace</span>
-                    </button>
-                  </>
+                  <button
+                    onClick={() => navigateTo('creator-projects', { projectId: req.projectId || 'proj-101' })}
+                    className="btn btn-primary btn-sm"
+                  >
+                    <Briefcase size={14} />
+                    <span>Open Project Workspace</span>
+                  </button>
                 )}
 
                 {req.status === 'Incoming' && (

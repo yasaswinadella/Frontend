@@ -23,7 +23,6 @@ export const RoleSwitchBanner = () => {
       { id: 'brand-creator-detail', label: 'Creator Profile Detail (Brand View)' },
       { id: 'shortlist-compare', label: 'Shortlist & Compare' },
       { id: 'brand-requests', label: 'Collaboration Requests' },
-      { id: 'brand-messages', label: 'Messages & Chat' },
       { id: 'brand-projects', label: 'Projects & Deliverables' },
       { id: 'brand-notifications', label: 'Notifications' },
       { id: 'brand-settings', label: 'Brand Settings' }
@@ -37,7 +36,6 @@ export const RoleSwitchBanner = () => {
       { id: 'creator-campaign-detail', label: 'Campaign Detail (Creator View)' },
       { id: 'submit-proposal', label: 'Submit Proposal' },
       { id: 'creator-requests', label: 'Collaboration Requests' },
-      { id: 'creator-messages', label: 'Messages & Chat' },
       { id: 'creator-projects', label: 'Active Engagements & Projects' },
       { id: 'creator-notifications', label: 'Creator Notifications' },
       { id: 'creator-settings', label: 'Creator Settings' },

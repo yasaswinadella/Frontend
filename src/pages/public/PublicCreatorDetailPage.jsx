@@ -9,7 +9,6 @@ import {
   Clock,
   Briefcase,
   ExternalLink,
-  MessageSquare,
   Sparkles,
   Send,
   Bookmark,
@@ -162,19 +161,6 @@ export const PublicCreatorDetailPage = () => {
 
             {/* Actions */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => {
-                  if (currentRole === 'public') {
-                    navigateTo('auth', { defaultRole: 'brand', defaultTab: 'signin' });
-                  } else {
-                    navigateTo('brand-messages');
-                  }
-                }}
-                className="btn btn-outline"
-              >
-                <MessageSquare size={16} />
-                <span>Message</span>
-              </button>
               <button
                 onClick={() => setIsCollabModalOpen(true)}
                 className="btn btn-primary"

@@ -3,7 +3,6 @@ import { useApp } from '../../context/AppContext';
 import {
   Sparkles,
   Building2,
-  User,
   ArrowRight,
   ShieldCheck,
   Lock,
@@ -65,15 +64,6 @@ export const AuthPage = ({ defaultTab = 'signin', defaultRole = 'brand' }) => {
     });
   };
 
-  const loginAsDemoCreator = () => {
-    switchRole('creator');
-    addToast({
-      title: 'Demo Session Activated',
-      message: 'Logged in as Elena Rostova (Verified AI Creator)',
-      type: 'success'
-    });
-  };
-
   return (
     <div style={{
       minHeight: 'calc(100vh - 120px)',
@@ -122,22 +112,14 @@ export const AuthPage = ({ defaultTab = 'signin', defaultRole = 'brand' }) => {
             <Sparkles size={14} />
             <span>ONE-CLICK DEMO LOGIN (EASY TEST DRIVE)</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div>
             <button
               onClick={loginAsDemoBrand}
               className="btn btn-primary btn-sm"
-              style={{ fontSize: '0.78rem' }}
+              style={{ fontSize: '0.78rem', width: '100%', justifyContent: 'center' }}
             >
               <Building2 size={14} />
               <span>Login as Brand</span>
-            </button>
-            <button
-              onClick={loginAsDemoCreator}
-              className="btn btn-outline btn-sm"
-              style={{ fontSize: '0.78rem', background: 'rgba(255,255,255,0.1)', color: 'var(--white)', borderColor: 'rgba(255,255,255,0.2)' }}
-            >
-              <User size={14} />
-              <span>Login as Creator</span>
             </button>
           </div>
         </div>

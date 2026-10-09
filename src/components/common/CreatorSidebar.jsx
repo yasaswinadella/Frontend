@@ -8,12 +8,11 @@ import {
   Compass,
   FileSpreadsheet,
   Inbox,
-  MessageSquare,
   Briefcase,
   Bell,
   Settings,
-  Eye,
-  ExternalLink
+  LogOut,
+  Eye
 } from 'lucide-react';
 
 export const CreatorSidebar = () => {
@@ -23,12 +22,10 @@ export const CreatorSidebar = () => {
     switchRole,
     activeCreatorProfile,
     collaborationRequests,
-    conversations,
     notifications,
     evidenceRecords
   } = useApp();
 
-  const unreadMessages = conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
   const pendingInvites = collaborationRequests.filter(
     (r) => r.status === 'Incoming' || r.status === 'Counteroffer'
   ).length;
@@ -52,12 +49,6 @@ export const CreatorSidebar = () => {
       label: 'Collaboration Requests',
       icon: <Inbox size={18} />,
       badge: pendingInvites > 0 ? pendingInvites : null
-    },
-    {
-      id: 'creator-messages',
-      label: 'Messages & Chat',
-      icon: <MessageSquare size={18} />,
-      badge: unreadMessages > 0 ? unreadMessages : null
     },
     { id: 'creator-projects', label: 'Active Engagements & Projects', icon: <Briefcase size={18} /> },
     {
@@ -164,6 +155,28 @@ export const CreatorSidebar = () => {
           );
         })}
 
+        {/* Sign Out Button below Settings */}
+        <button
+          onClick={() => switchRole('public')}
+          className="nav-item"
+          style={{
+            width: 'calc(100% - 24px)',
+            textAlign: 'left',
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            color: '#f87171',
+            marginTop: '4px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span className="nav-item-icon" style={{ color: '#f87171' }}>
+              <LogOut size={18} />
+            </span>
+            <span>Sign Out</span>
+          </div>
+        </button>
+
         {/* Public Profile Preview Quick Link */}
         <div style={{ padding: '12px 12px 4px' }}>
           <button
@@ -188,32 +201,6 @@ export const CreatorSidebar = () => {
             <span>Public Profile Preview</span>
           </button>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div style={{
-        padding: '16px 20px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        background: 'rgba(0,0,0,0.2)'
-      }}>
-        <button
-          onClick={() => switchRole('public')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            background: 'transparent',
-            border: 'none',
-            color: '#888',
-            fontSize: '0.82rem',
-            cursor: 'pointer',
-            padding: '6px 0'
-          }}
-        >
-          <span>Exit to Marketplace</span>
-          <ExternalLink size={14} />
-        </button>
       </div>
     </aside>
   );

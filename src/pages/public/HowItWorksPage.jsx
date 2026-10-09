@@ -5,7 +5,6 @@ import {
   Sparkles,
   ShieldCheck,
   Send,
-  MessageSquare,
   CheckCircle,
   FileSpreadsheet,
   Layers,
@@ -41,7 +40,7 @@ export const HowItWorksPage = () => {
     {
       step: '04',
       title: 'Milestone Escrow & Seamless Collaboration',
-      description: 'Funds are securely deposited into CreatorProof Escrow. Collaborate in our built-in real-time chat, review multi-version file previews, request revisions, and release payouts upon approving milestones.',
+      description: 'Funds are securely deposited into CreatorProof Escrow. Collaborate with structured milestone reviews, inspect multi-version file previews, request revisions, and release payouts upon approving milestones.',
       icon: <Lock size={24} color="var(--electric-teal)" />
     }
   ];

@@ -10,7 +10,6 @@ import {
   Sparkles,
   Send,
   Bookmark,
-  MessageSquare,
   CheckCircle2,
   AlertTriangle,
   ExternalLink,
@@ -163,14 +162,6 @@ export const BrandCreatorDetailPage = () => {
             >
               <Send size={16} />
               <span>Send Proposal / Brief</span>
-            </button>
-            <button
-              onClick={() => navigateTo('brand-messages', { conversationId: 'conv-1' })}
-              className="btn btn-outline"
-              style={{ justifyContent: 'center' }}
-            >
-              <MessageSquare size={16} />
-              <span>Message Creator</span>
             </button>
           </div>
         </div>

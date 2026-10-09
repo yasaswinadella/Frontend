@@ -5,7 +5,6 @@ import {
   CheckCheck,
   CheckCircle2,
   FileSpreadsheet,
-  MessageSquare,
   Sparkles,
   AlertCircle,
   Clock,
@@ -64,7 +63,7 @@ export const BrandNotificationsPage = () => {
             Notifications
           </h1>
           <p style={{ color: 'var(--muted-gray)', fontSize: '0.9rem', marginTop: '4px' }}>
-            Stay updated on new creator proposals, milestone asset uploads, counteroffers, and messages.
+            Stay updated on new creator proposals, milestone asset uploads, counteroffers, and project statuses.
           </p>
         </div>
 

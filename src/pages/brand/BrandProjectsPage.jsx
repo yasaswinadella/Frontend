@@ -8,7 +8,6 @@ import {
   FileText,
   Download,
   Eye,
-  MessageSquare,
   Sparkles,
   Layers,
   Clock,
@@ -109,14 +108,6 @@ export const BrandProjectsPage = () => {
               Creator: <strong>{activeProject.creatorName}</strong> • Target Deadline: <strong>{activeProject.targetDeadline}</strong>
             </div>
           </div>
-
-          <button
-            onClick={() => navigateTo('brand-messages', { conversationId: 'conv-1' })}
-            className="btn btn-outline btn-sm"
-          >
-            <MessageSquare size={14} />
-            <span>Open Project Chat</span>
-          </button>
         </div>
 
         {/* Progress Bar */}

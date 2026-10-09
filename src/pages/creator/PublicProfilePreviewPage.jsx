@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Sparkles,
   ExternalLink,
-  MessageSquare,
   Send,
   Lock
 } from 'lucide-react';
@@ -76,10 +75,6 @@ export const PublicProfilePreviewPage = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="btn btn-outline btn-sm">
-                <MessageSquare size={14} />
-                <span>Message</span>
-              </button>
               <button className="btn btn-primary btn-sm">
                 <Send size={14} />
                 <span>Request Collaboration</span>

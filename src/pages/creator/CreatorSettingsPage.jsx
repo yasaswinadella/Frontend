@@ -5,14 +5,13 @@ import {
   Shield,
   CreditCard,
   Bell,
-  LogOut,
   Save,
   CheckCircle2,
   DollarSign
 } from 'lucide-react';
 
 export const CreatorSettingsPage = () => {
-  const { activeCreatorProfile, switchRole, addToast } = useApp();
+  const { activeCreatorProfile, addToast } = useApp();
   const [activeTab, setActiveTab] = useState('payouts');
 
   const [settings, setSettings] = useState({
@@ -134,17 +133,7 @@ export const CreatorSettingsPage = () => {
         )}
 
         {/* Action Controls */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px' }}>
-          <button
-            type="button"
-            onClick={() => switchRole('public')}
-            className="btn btn-outline"
-            style={{ color: '#DC2626' }}
-          >
-            <LogOut size={16} />
-            <span>Sign Out</span>
-          </button>
-
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '24px' }}>
           <button type="submit" className="btn btn-primary">
             <Save size={16} />
             <span>Save Settings</span>

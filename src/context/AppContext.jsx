@@ -132,13 +132,13 @@ export const AppProvider = ({ children }) => {
     const brandPages = [
       'brand-dashboard', 'brand-profile', 'my-campaigns', 'create-campaign',
       'ai-brief-builder', 'explore-creators', 'brand-creator-detail',
-      'shortlist-compare', 'brand-requests', 'brand-messages', 'brand-projects',
+      'shortlist-compare', 'brand-requests', 'brand-projects',
       'brand-notifications', 'brand-settings'
     ];
     const creatorPages = [
       'creator-dashboard', 'creator-profile', 'portfolio-manager',
       'evidence-verification', 'available-campaigns', 'creator-campaign-detail',
-      'submit-proposal', 'creator-requests', 'creator-messages', 'creator-projects',
+      'submit-proposal', 'creator-requests', 'creator-projects',
       'creator-notifications', 'creator-settings', 'public-profile-preview'
     ];
 

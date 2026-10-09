@@ -24,7 +24,6 @@ import { ExploreCreatorsPage } from './pages/brand/ExploreCreatorsPage';
 import { BrandCreatorDetailPage } from './pages/brand/BrandCreatorDetailPage';
 import { ShortlistComparePage } from './pages/brand/ShortlistComparePage';
 import { BrandRequestsPage } from './pages/brand/BrandRequestsPage';
-import { BrandMessagesPage } from './pages/brand/BrandMessagesPage';
 import { BrandProjectsPage } from './pages/brand/BrandProjectsPage';
 import { BrandNotificationsPage } from './pages/brand/BrandNotificationsPage';
 import { BrandSettingsPage } from './pages/brand/BrandSettingsPage';
@@ -38,7 +37,6 @@ import { AvailableCampaignsPage } from './pages/creator/AvailableCampaignsPage';
 import { CreatorCampaignDetailPage } from './pages/creator/CreatorCampaignDetailPage';
 import { SubmitProposalPage } from './pages/creator/SubmitProposalPage';
 import { CreatorRequestsPage } from './pages/creator/CreatorRequestsPage';
-import { CreatorMessagesPage } from './pages/creator/CreatorMessagesPage';
 import { CreatorProjectsPage } from './pages/creator/CreatorProjectsPage';
 import { CreatorNotificationsPage } from './pages/creator/CreatorNotificationsPage';
 import { CreatorSettingsPage } from './pages/creator/CreatorSettingsPage';
@@ -86,8 +84,6 @@ const MainContent = () => {
           return { title: 'Shortlist & Compare', subtitle: 'Side-by-side evaluation matrix across saved creators' };
         case 'brand-requests':
           return { title: 'Collaboration Requests', subtitle: 'Review creator proposals, invitations, and counteroffers' };
-        case 'brand-messages':
-          return { title: 'Messages & Chat', subtitle: 'Real-time client-creator messaging and asset sharing' };
         case 'brand-projects':
           return { title: 'Projects & Deliverables', subtitle: 'Milestone tracking, version reviews, and escrow disbursement' };
         case 'brand-notifications':
@@ -115,7 +111,6 @@ const MainContent = () => {
           {currentPage === 'brand-creator-detail' && <BrandCreatorDetailPage />}
           {currentPage === 'shortlist-compare' && <ShortlistComparePage />}
           {currentPage === 'brand-requests' && <BrandRequestsPage />}
-          {currentPage === 'brand-messages' && <BrandMessagesPage />}
           {currentPage === 'brand-projects' && <BrandProjectsPage />}
           {currentPage === 'brand-notifications' && <BrandNotificationsPage />}
           {currentPage === 'brand-settings' && <BrandSettingsPage />}
@@ -144,8 +139,6 @@ const MainContent = () => {
           return { title: 'Submit Proposal', subtitle: 'Pitch your creative approach, delivery timeline, and milestones' };
         case 'creator-requests':
           return { title: 'Collaboration Requests', subtitle: 'Manage brand invitations, counteroffers, and proposal statuses' };
-        case 'creator-messages':
-          return { title: 'Messages & Chat', subtitle: 'Communicate directly with brands and share render previews' };
         case 'creator-projects':
           return { title: 'Active Engagements & Projects', subtitle: 'Deliverable version uploads and escrow payout tracking' };
         case 'creator-notifications':
@@ -174,7 +167,6 @@ const MainContent = () => {
           {currentPage === 'creator-campaign-detail' && <CreatorCampaignDetailPage />}
           {currentPage === 'submit-proposal' && <SubmitProposalPage />}
           {currentPage === 'creator-requests' && <CreatorRequestsPage />}
-          {currentPage === 'creator-messages' && <CreatorMessagesPage />}
           {currentPage === 'creator-projects' && <CreatorProjectsPage />}
           {currentPage === 'creator-notifications' && <CreatorNotificationsPage />}
           {currentPage === 'creator-settings' && <CreatorSettingsPage />}

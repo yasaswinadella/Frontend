@@ -7,13 +7,12 @@ import {
   Lock,
   CreditCard,
   User,
-  LogOut,
   Save,
   CheckCircle2
 } from 'lucide-react';
 
 export const BrandSettingsPage = () => {
-  const { brandProfile, switchRole, addToast } = useApp();
+  const { brandProfile, addToast } = useApp();
   const [activeTab, setActiveTab] = useState('account');
 
   const [settings, setSettings] = useState({
@@ -186,17 +185,7 @@ export const BrandSettingsPage = () => {
         )}
 
         {/* Action Bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px' }}>
-          <button
-            type="button"
-            onClick={() => switchRole('public')}
-            className="btn btn-outline"
-            style={{ color: '#DC2626' }}
-          >
-            <LogOut size={16} />
-            <span>Sign Out</span>
-          </button>
-
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '24px' }}>
           <button type="submit" className="btn btn-primary">
             <Save size={16} />
             <span>Save Settings</span>

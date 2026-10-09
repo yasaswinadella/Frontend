@@ -17,7 +17,6 @@ import {
   Clock,
   Eye,
   Lock,
-  MessageSquare,
   Upload,
   Check,
   FileText
@@ -29,7 +28,6 @@ export const CreatorDashboardPage = () => {
     campaigns,
     collaborationRequests,
     projects,
-    conversations,
     evidenceRecords,
     navigateTo,
     setSelectedCampaignId,
@@ -317,7 +315,7 @@ export const CreatorDashboardPage = () => {
                   Revision Requested by Creative Lead:
                 </div>
                 <p style={{ fontStyle: 'italic', margin: '0 0 10px 0', lineHeight: 1.4 }}>
-                  "Warm lighting adjustment on serum reflection highlights to match neutral daylight tone. Diffusion passes uploaded in chat."
+                  "Warm lighting adjustment on serum reflection highlights to match neutral daylight tone. Diffusion passes uploaded in review files."
                 </p>
 
                 <button
@@ -402,7 +400,7 @@ export const CreatorDashboardPage = () => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Proposals in Pipeline + Recent Messages */}
+        {/* RIGHT COLUMN: Proposals in Pipeline */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Proposals in Pipeline Widget */}
           <div className="card" style={{ padding: '22px' }}>
@@ -445,59 +443,6 @@ export const CreatorDashboardPage = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.78rem' }}>
                   <span style={{ color: '#059669', fontWeight: 700 }}>Contract Ready</span>
                   <strong>$5,200 Locked</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Messages Widget */}
-          <div className="card" style={{ padding: '22px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: 0 }}>
-                Recent Messages
-              </h3>
-              <button
-                onClick={() => navigateTo('creator-messages')}
-                style={{ background: 'none', border: 'none', color: 'var(--electric-teal)', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer' }}
-              >
-                Open Inbox
-              </button>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div
-                onClick={() => navigateTo('creator-messages')}
-                style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-              >
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--ink-black)', color: 'var(--white)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 800 }}>
-                  AC
-                </div>
-                <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <strong>Apex Creative</strong>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--muted-gray)' }}>14m ago</span>
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--muted-gray)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    "Please check the lighting notes..."
-                  </div>
-                </div>
-              </div>
-
-              <div
-                onClick={() => navigateTo('creator-messages')}
-                style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-              >
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--ink-black)', color: 'var(--white)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: 800 }}>
-                  KS
-                </div>
-                <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                    <strong>Kura Studio</strong>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--muted-gray)' }}>2h ago</span>
-                  </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--muted-gray)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    "Loved your portfolio samples..."
-                  </div>
                 </div>
               </div>
             </div>

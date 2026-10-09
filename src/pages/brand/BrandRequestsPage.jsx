@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   XCircle,
   RefreshCw,
-  MessageSquare,
   FolderKanban,
   DollarSign,
   Calendar,
@@ -20,8 +19,7 @@ export const BrandRequestsPage = () => {
     collaborationRequests,
     respondToRequest,
     navigateTo,
-    setSelectedProjectId,
-    setSelectedConversationId
+    setSelectedProjectId
   } = useApp();
 
   const [activeTab, setActiveTab] = useState('All'); // 'All' | 'Sent' | 'Incoming' | 'Counteroffer' | 'Accepted' | 'Declined'
@@ -180,22 +178,13 @@ export const BrandRequestsPage = () => {
               {/* Action Buttons */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid var(--soft-border)', paddingTop: '16px', flexWrap: 'wrap' }}>
                 {req.status === 'Accepted' && (
-                  <>
-                    <button
-                      onClick={() => navigateTo('brand-messages', { conversationId: 'conv-1' })}
-                      className="btn btn-outline btn-sm"
-                    >
-                      <MessageSquare size={14} />
-                      <span>Open Chat</span>
-                    </button>
-                    <button
-                      onClick={() => navigateTo('brand-projects', { projectId: req.projectId || 'proj-101' })}
-                      className="btn btn-primary btn-sm"
-                    >
-                      <FolderKanban size={14} />
-                      <span>View Active Deliverables</span>
-                    </button>
-                  </>
+                  <button
+                    onClick={() => navigateTo('brand-projects', { projectId: req.projectId || 'proj-101' })}
+                    className="btn btn-primary btn-sm"
+                  >
+                    <FolderKanban size={14} />
+                    <span>View Active Deliverables</span>
+                  </button>
                 )}
 
                 {(req.status === 'Sent' || req.status === 'Counteroffer') && (

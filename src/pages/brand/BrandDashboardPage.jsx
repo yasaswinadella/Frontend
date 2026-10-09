@@ -12,7 +12,6 @@ import {
   Clock,
   CheckCircle2,
   TrendingUp,
-  MessageSquare,
   AlertCircle,
   ShieldCheck,
   Scale,

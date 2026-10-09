@@ -8,12 +8,10 @@ import {
   Search,
   Scale,
   Send,
-  MessageSquare,
   FolderKanban,
   Bell,
   Settings,
-  LogOut,
-  ExternalLink
+  LogOut
 } from 'lucide-react';
 
 export const BrandSidebar = () => {
@@ -23,12 +21,10 @@ export const BrandSidebar = () => {
     switchRole,
     brandProfile,
     collaborationRequests,
-    conversations,
     notifications,
     shortlistedCreatorIds
   } = useApp();
 
-  const unreadMessages = conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0);
   const pendingRequests = collaborationRequests.filter(
     (r) => r.status === 'Sent' || r.status === 'Counteroffer'
   ).length;
@@ -51,12 +47,6 @@ export const BrandSidebar = () => {
       label: 'Collaboration Requests',
       icon: <Send size={18} />,
       badge: pendingRequests > 0 ? pendingRequests : null
-    },
-    {
-      id: 'brand-messages',
-      label: 'Messages & Chat',
-      icon: <MessageSquare size={18} />,
-      badge: unreadMessages > 0 ? unreadMessages : null
     },
     { id: 'brand-projects', label: 'Projects & Deliverables', icon: <FolderKanban size={18} /> },
     {
@@ -163,31 +153,27 @@ export const BrandSidebar = () => {
             </button>
           );
         })}
-      </div>
 
-      {/* Footer / Quick Role Switch */}
-      <div style={{
-        padding: '16px 20px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        background: 'rgba(0,0,0,0.2)'
-      }}>
+        {/* Sign Out Button below Settings */}
         <button
           onClick={() => switchRole('public')}
+          className="nav-item"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            background: 'transparent',
+            width: 'calc(100% - 24px)',
+            textAlign: 'left',
             border: 'none',
-            color: '#888',
-            fontSize: '0.82rem',
+            background: 'transparent',
             cursor: 'pointer',
-            padding: '6px 0'
+            color: '#f87171',
+            marginTop: '4px'
           }}
         >
-          <span>Exit to Marketplace</span>
-          <ExternalLink size={14} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span className="nav-item-icon" style={{ color: '#f87171' }}>
+              <LogOut size={18} />
+            </span>
+            <span>Sign Out</span>
+          </div>
         </button>
       </div>
     </aside>

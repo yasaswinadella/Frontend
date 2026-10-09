@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Upload,
-  MessageSquare,
   Sparkles,
   Layers,
   FileText,
@@ -89,14 +88,6 @@ export const CreatorProjectsPage = () => {
               Client: <strong>{activeProject.brandName}</strong> • Target Deadline: <strong>{activeProject.targetDeadline}</strong>
             </div>
           </div>
-
-          <button
-            onClick={() => navigateTo('creator-messages')}
-            className="btn btn-outline btn-sm"
-          >
-            <MessageSquare size={14} />
-            <span>Chat with Brand</span>
-          </button>
         </div>
 
         {/* Milestone Financial Summary */}

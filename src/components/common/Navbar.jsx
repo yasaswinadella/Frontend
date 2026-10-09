@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Sparkles, Search, LogIn, UserPlus, Shield, Compass, BookOpen, Layers } from 'lucide-react';
+import { Sparkles, Search, LogIn, Shield, Compass, BookOpen, Layers } from 'lucide-react';
 
 export const Navbar = () => {
   const { currentPage, navigateTo, switchRole } = useApp();
@@ -115,19 +115,10 @@ export const Navbar = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button
             onClick={() => navigateTo('auth', { defaultTab: 'signin' })}
-            className="btn btn-ghost"
-            style={{ color: 'var(--white)' }}
-          >
-            <LogIn size={16} />
-            Sign In
-          </button>
-
-          <button
-            onClick={() => navigateTo('auth', { defaultTab: 'signup' })}
             className="btn btn-primary"
           >
-            <UserPlus size={16} />
-            Get Started
+            <LogIn size={16} />
+            <span>Sign In</span>
           </button>
         </div>
       </div>

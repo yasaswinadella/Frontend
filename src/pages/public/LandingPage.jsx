@@ -464,7 +464,7 @@ export const LandingPage = () => {
                 lineHeight: 1.55,
                 margin: 0
               }}>
-                Send requests, chat, and manage projects — all in one place.
+                Send requests, review deliverables, and manage projects — all in one place.
               </p>
             </div>
           </div>

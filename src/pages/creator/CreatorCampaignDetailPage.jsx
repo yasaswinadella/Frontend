@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   ArrowLeft,
   Send,
-  MessageSquare,
   Building2,
   FileText
 } from 'lucide-react';
@@ -63,13 +62,6 @@ export const CreatorCampaignDetailPage = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button
-              onClick={() => navigateTo('creator-messages')}
-              className="btn btn-outline"
-            >
-              <MessageSquare size={16} />
-              <span>Ask Question</span>
-            </button>
             <button
               onClick={() => navigateTo('submit-proposal', { campaignId: campaign.id })}
               className="btn btn-primary"
