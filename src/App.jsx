@@ -126,7 +126,8 @@ const MainContent = () => {
         case 'creator-dashboard':
           return { title: 'Creator Dashboard', subtitle: 'Performance metrics, incoming invitations, and active engagements' };
         case 'creator-profile':
-          return { title: 'My Creator Profile', subtitle: 'Public profile settings, declared tools, and commercial rights' };
+        case 'my-creator-profile':
+          return { title: 'Creator Profile Builder & Opportunity Discovery', subtitle: 'AI portfolio intelligence, profile improvement suggestions, and brand opportunity scout' };
         case 'portfolio-manager':
           return { title: 'Portfolio Manager', subtitle: 'Showcase generation renders and case study workflows' };
         case 'evidence-verification':
@@ -160,7 +161,7 @@ const MainContent = () => {
         <div className="workspace-main">
           <WorkspaceTopbar title={header.title} subtitle={header.subtitle} />
           {currentPage === 'creator-dashboard' && <CreatorDashboardPage />}
-          {currentPage === 'creator-profile' && <MyCreatorProfilePage />}
+          {(currentPage === 'creator-profile' || currentPage === 'my-creator-profile') && <MyCreatorProfilePage />}
           {currentPage === 'portfolio-manager' && <PortfolioManagerPage />}
           {currentPage === 'evidence-verification' && <EvidenceVerificationPage />}
           {currentPage === 'available-campaigns' && <AvailableCampaignsPage />}
@@ -179,13 +180,76 @@ const MainContent = () => {
   return null;
 };
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('App Error Caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#FAFAFA',
+          padding: '24px',
+          textAlign: 'center',
+          fontFamily: 'var(--font-sans)'
+        }}>
+          <div style={{
+            maxWidth: '500px',
+            backgroundColor: '#FFFFFF',
+            padding: '36px',
+            borderRadius: '24px',
+            border: '1px solid #E4E4E7',
+            boxShadow: 'var(--shadow-md)'
+          }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '12px', color: '#09090B' }}>
+              Something went wrong
+            </h2>
+            <p style={{ color: '#71717A', fontSize: '0.9rem', marginBottom: '24px', lineHeight: 1.5 }}>
+              An unexpected render error occurred. Click below to refresh and reset the workspace.
+            </p>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+              }}
+              className="btn btn-dark"
+              style={{ padding: '10px 24px', fontSize: '0.9rem' }}
+            >
+              Reset & Reload Application
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export function App() {
   return (
-    <AppProvider>
-      <MainContent />
-      <ToastContainer />
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <MainContent />
+        <ToastContainer />
+      </AppProvider>
+    </ErrorBoundary>
   );
 }
 
 export default App;
+

@@ -1,146 +1,125 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Sparkles, ArrowRight, Building2, User, LogIn, UserPlus } from 'lucide-react';
+import { Sparkles, Building2, User, Search, LogIn, UserPlus } from 'lucide-react';
 
 export const Navbar = () => {
   const { currentPage, navigateTo, switchRole } = useApp();
 
   return (
     <header style={{
-      backgroundColor: '#FFFFFF',
+      backgroundColor: 'rgba(255, 255, 255, 0.96)',
+      backdropFilter: 'blur(16px)',
+      WebkitBackdropFilter: 'blur(16px)',
       borderBottom: '1px solid var(--border-light)',
       position: 'sticky',
       top: 0,
       zIndex: 40,
-      boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)'
+      transition: 'all 0.2s ease'
     }}>
       <div style={{
-        maxWidth: '1280px',
+        maxWidth: '1360px',
         margin: '0 auto',
-        padding: '0 24px',
-        height: '72px',
+        padding: '0 28px',
+        height: '74px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between'
       }}>
-        {/* CreatorProof AI Logo */}
+        {/* Brand Logo */}
         <div
           onClick={() => navigateTo('landing')}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '12px',
-            cursor: 'pointer'
+            gap: '10px',
+            cursor: 'pointer',
+            userSelect: 'none'
           }}
         >
           <div style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 3px 10px rgba(99, 102, 241, 0.3)'
+            color: '#09090B'
           }}>
-            <Sparkles size={20} color="#FFFFFF" />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 1L14.4 9.6L23 12L14.4 14.4L12 23L9.6 14.4L1 12L9.6 9.6L12 1Z" />
+            </svg>
           </div>
-          <div>
-            <div style={{
-              fontWeight: 800,
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              fontWeight: 850,
               fontSize: '1.2rem',
-              letterSpacing: '-0.02em',
-              color: 'var(--text-primary)',
-              lineHeight: 1.1
+              letterSpacing: '-0.03em',
+              color: '#09090B',
+              lineHeight: 1
             }}>
-              CreatorProof<span style={{ color: 'var(--primary)' }}>.ai</span>
-            </div>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.04em' }}>
-              AI CONTENT CREATOR MARKETPLACE
-            </div>
+              Creativity Meets Opportunity
+            </span>
+            <span style={{
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              color: '#FFFFFF',
+              backgroundColor: '#18181B',
+              padding: '1px 6px',
+              borderRadius: '9999px',
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase'
+            }}>
+              AI
+            </span>
           </div>
         </div>
 
-        {/* Public Navigation */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+        {/* Center Navigation Links: Explore */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <button
             onClick={() => navigateTo('directory')}
             style={{
               background: 'transparent',
               border: 'none',
-              color: currentPage === 'directory' ? 'var(--primary)' : 'var(--text-secondary)',
+              color: currentPage === 'directory' ? '#09090B' : '#52525B',
               fontWeight: currentPage === 'directory' ? 700 : 500,
-              fontSize: '0.925rem',
+              fontSize: '0.9rem',
               cursor: 'pointer',
+              marginLeft: '8px',
               transition: 'color 0.15s ease'
             }}
           >
             Explore Creators
           </button>
-
-          <button
-            onClick={() => navigateTo('how-it-works')}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: currentPage === 'how-it-works' ? 'var(--primary)' : 'var(--text-secondary)',
-              fontWeight: currentPage === 'how-it-works' ? 700 : 500,
-              fontSize: '0.925rem',
-              cursor: 'pointer',
-              transition: 'color 0.15s ease'
-            }}
-          >
-            How It Works
-          </button>
         </nav>
 
-        {/* Action CTAs */}
+        {/* Action CTAs (Sign up, Log in) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <button
             onClick={() => navigateTo('auth', { defaultTab: 'signin' })}
-            className="btn btn-ghost btn-sm"
-            style={{ color: 'var(--text-primary)', fontWeight: 600 }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#09090B',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              padding: '8px 14px',
+              cursor: 'pointer'
+            }}
           >
-            <LogIn size={15} />
-            <span>Login</span>
+            Log in
           </button>
 
           <button
             onClick={() => navigateTo('auth', { defaultTab: 'signup' })}
-            className="btn btn-primary btn-sm"
+            className="btn btn-dark"
+            style={{
+              padding: '8px 20px',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              backgroundColor: '#09090B',
+              color: '#FFFFFF'
+            }}
           >
-            <UserPlus size={15} />
-            <span>Sign Up</span>
+            Sign up
           </button>
-
-          {/* Quick Demo Workspace Launcher */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            marginLeft: '12px',
-            paddingLeft: '12px',
-            borderLeft: '1px solid var(--border-light)'
-          }}>
-            <button
-              onClick={() => switchRole('brand')}
-              className="btn btn-outline btn-sm"
-              title="Quick jump to Brand Dashboard"
-              style={{ fontSize: '0.78rem', padding: '5px 10px', color: 'var(--primary)', borderColor: '#C7D2FE' }}
-            >
-              <Building2 size={13} />
-              <span>Brand Demo</span>
-            </button>
-            <button
-              onClick={() => switchRole('creator')}
-              className="btn btn-outline btn-sm"
-              title="Quick jump to Creator Dashboard"
-              style={{ fontSize: '0.78rem', padding: '5px 10px', color: '#7C3AED', borderColor: '#DDD6FE' }}
-            >
-              <User size={13} />
-              <span>Creator Demo</span>
-            </button>
-          </div>
         </div>
       </div>
     </header>

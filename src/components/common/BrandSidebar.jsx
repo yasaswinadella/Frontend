@@ -68,8 +68,7 @@ export const BrandSidebar = () => {
           label: 'Applications',
           icon: <Send size={17} />,
           badge: pendingRequests > 0 ? pendingRequests : null
-        },
-        { id: 'brand-messages', label: 'Messages', icon: <MessageSquare size={17} /> }
+        }
       ]
     },
     {

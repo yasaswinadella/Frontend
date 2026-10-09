@@ -62,8 +62,7 @@ export const CreatorSidebar = () => {
           label: 'Invitations & Offers',
           icon: <Mail size={17} />,
           badge: pendingInvitations > 0 ? pendingInvitations : null
-        },
-        { id: 'creator-messages', label: 'Messages', icon: <MessageSquare size={17} /> }
+        }
       ]
     },
     {

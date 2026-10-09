@@ -14,10 +14,14 @@ import {
   Calendar,
   DollarSign,
   Users,
-  Edit,
+  Edit3,
   Eye,
   Trash2,
-  Building2
+  Building2,
+  Layers,
+  ShieldCheck,
+  Film,
+  Monitor
 } from 'lucide-react';
 
 export const MyCampaignsPage = () => {
@@ -39,7 +43,8 @@ export const MyCampaignsPage = () => {
         !searchTerm.trim() ||
         c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.contentCategory?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.creativeStyle?.toLowerCase().includes(searchTerm.toLowerCase());
+        c.creativeStyle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.description?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesTab && matchesSearch;
     });
   }, [campaigns, activeTab, searchTerm]);
@@ -50,6 +55,21 @@ export const MyCampaignsPage = () => {
     Draft: campaigns.filter((c) => c.status === 'Draft').length,
     Paused: campaigns.filter((c) => c.status === 'Paused').length,
     Completed: campaigns.filter((c) => c.status === 'Completed').length
+  };
+
+  const handleCreateNew = () => {
+    setSelectedCampaignId(null);
+    navigateTo('create-campaign');
+  };
+
+  const handleEditCampaign = (campId) => {
+    setSelectedCampaignId(campId);
+    navigateTo('create-campaign');
+  };
+
+  const handleFindMatches = (campId) => {
+    setSelectedCampaignId(campId);
+    navigateTo('explore-creators');
   };
 
   return (
@@ -65,7 +85,7 @@ export const MyCampaignsPage = () => {
             My Creative Briefs & Campaigns
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '4px' }}>
-            Manage active procurement briefs, review creator applications, and inspect AI suitability matches.
+            Manage active procurement briefs, edit requirements, and match verified AI creators against campaign specs.
           </p>
         </div>
 
@@ -81,7 +101,7 @@ export const MyCampaignsPage = () => {
           </button>
           <button
             type="button"
-            onClick={() => navigateTo('create-campaign')}
+            onClick={handleCreateNew}
             className="btn btn-primary"
           >
             <PlusCircle size={16} />
@@ -125,7 +145,7 @@ export const MyCampaignsPage = () => {
               type="text"
               className="form-input"
               style={{ paddingLeft: '36px', padding: '8px 12px 8px 36px', fontSize: '0.85rem' }}
-              placeholder="Search briefs..."
+              placeholder="Search briefs by title, category, or style..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -145,7 +165,7 @@ export const MyCampaignsPage = () => {
           </p>
           <button
             type="button"
-            onClick={() => navigateTo('create-campaign')}
+            onClick={handleCreateNew}
             className="btn btn-primary"
           >
             Create Your First Brief
@@ -161,47 +181,87 @@ export const MyCampaignsPage = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '14px' }}>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <span className="badge badge-purple" style={{ fontSize: '0.72rem' }}>
-                      {camp.contentCategory}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                    <span className="badge badge-purple" style={{ fontSize: '0.75rem' }}>
+                      {camp.contentCategory || 'AI Video & Visuals'}
                     </span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Created {camp.createdAt}</span>
+                    {camp.creativeStyle && (
+                      <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>
+                        Style: {camp.creativeStyle}
+                      </span>
+                    )}
+                    {camp.aspectRatio && (
+                      <span className="badge badge-gray" style={{ fontSize: '0.72rem' }}>
+                        {camp.aspectRatio}
+                      </span>
+                    )}
+                    {camp.format && (
+                      <span className="badge badge-gray" style={{ fontSize: '0.72rem' }}>
+                        {camp.format}
+                      </span>
+                    )}
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      Created {camp.createdAt}
+                    </span>
                   </div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)' }}>
                     {camp.title}
                   </h3>
                 </div>
 
-                <span style={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  padding: '4px 12px',
-                  borderRadius: 'var(--radius-full)',
-                  backgroundColor:
-                    camp.status === 'Active' ? '#ECFDF5' :
-                    camp.status === 'Draft' ? 'var(--bg-secondary)' :
-                    camp.status === 'Paused' ? '#FFFBEB' : '#EFF6FF',
-                  color:
-                    camp.status === 'Active' ? '#059669' :
-                    camp.status === 'Draft' ? 'var(--text-secondary)' :
-                    camp.status === 'Paused' ? '#D97706' : '#2563EB',
-                  border: '1px solid currentColor'
-                }}>
-                  {camp.status}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    padding: '4px 12px',
+                    borderRadius: 'var(--radius-full)',
+                    backgroundColor:
+                      camp.status === 'Active' ? '#ECFDF5' :
+                      camp.status === 'Draft' ? 'var(--bg-secondary)' :
+                      camp.status === 'Paused' ? '#FFFBEB' : '#EFF6FF',
+                    color:
+                      camp.status === 'Active' ? '#059669' :
+                      camp.status === 'Draft' ? 'var(--text-secondary)' :
+                      camp.status === 'Paused' ? '#D97706' : '#2563EB',
+                    border: '1px solid currentColor'
+                  }}>
+                    {camp.status}
+                  </span>
+                </div>
               </div>
 
               <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '16px' }}>
-                {camp.objective}
+                {camp.objective || camp.description}
               </p>
 
-              {/* Tools & Specs Tags */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '18px' }}>
-                {camp.requiredTools.map((t, idx) => (
-                  <span key={idx} className="badge badge-gray" style={{ fontSize: '0.7rem' }}>
-                    {t}
+              {/* Tools & Deliverables Specs */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '18px', backgroundColor: 'var(--bg-secondary)', padding: '12px 16px', borderRadius: 'var(--radius-md)' }}>
+                <div>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+                    Required AI Tools & Models:
                   </span>
-                ))}
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {camp.requiredTools && camp.requiredTools.length > 0 ? (
+                      camp.requiredTools.map((t, idx) => (
+                        <span key={idx} className="badge badge-gray" style={{ fontSize: '0.7rem' }}>
+                          {t}
+                        </span>
+                      ))
+                    ) : (
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Flux.1 Pro, ComfyUI</span>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ marginLeft: 'auto' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+                    Commercial Scope & Protection:
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                    <ShieldCheck size={14} color="#059669" />
+                    <span>{camp.usageRights || 'Full Commercial Global Buyout'}</span>
+                  </div>
+                </div>
               </div>
 
               {/* Bottom Actions */}
@@ -217,20 +277,44 @@ export const MyCampaignsPage = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                   <div>
                     <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Escrow Budget: </span>
-                    <strong style={{ fontSize: '1.15rem', color: 'var(--primary)' }}>${camp.budget}</strong>
+                    <strong style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>${camp.budget?.toLocaleString()}</strong>
+                  </div>
+                  <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
+                    Deadline: <strong>{camp.deadline || 'In 2-3 weeks'}</strong>
                   </div>
                   <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>
                     Applicants: <strong>{camp.applicantsCount || 0}</strong>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                   <button
                     type="button"
-                    onClick={() => navigateTo('explore-creators')}
-                    className="btn btn-outline btn-sm"
+                    onClick={() => duplicateCampaign(camp.id)}
+                    className="btn btn-ghost btn-sm"
+                    title="Duplicate Brief"
+                    style={{ padding: '6px 10px' }}
                   >
-                    <span>Match Creators</span>
+                    <Copy size={15} />
+                    <span>Duplicate</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEditCampaign(camp.id)}
+                    className="btn btn-outline btn-sm"
+                    style={{ padding: '6px 12px' }}
+                  >
+                    <Edit3 size={14} />
+                    <span>Edit Brief</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleFindMatches(camp.id)}
+                    className="btn btn-primary btn-sm"
+                    style={{ padding: '6px 14px' }}
+                  >
+                    <Sparkles size={14} />
+                    <span>Find Matching Creators</span>
                     <ArrowRight size={14} />
                   </button>
                 </div>
@@ -244,3 +328,4 @@ export const MyCampaignsPage = () => {
 };
 
 export default MyCampaignsPage;
+

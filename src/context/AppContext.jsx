@@ -15,11 +15,11 @@ const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   // Navigation & Role State
   const [currentRole, setCurrentRole] = useState(() => {
-    return localStorage.getItem('cp_role') || 'public'; // 'public' | 'brand' | 'creator'
+    return localStorage.getItem('cp_role_v3') || 'brand'; // Defaults directly to Brand Workspace
   });
 
   const [currentPage, setCurrentPage] = useState(() => {
-    return localStorage.getItem('cp_page') || 'landing';
+    return localStorage.getItem('cp_page_v3') || 'brand-dashboard';
   });
 
   // Selected Entities for Detail Views
@@ -33,42 +33,42 @@ export const AppProvider = ({ children }) => {
 
   // Dynamic Data Stores with local storage fallback
   const [creators, setCreators] = useState(() => {
-    const saved = localStorage.getItem('cp_creators');
+    const saved = localStorage.getItem('cp_creators_v3');
     return saved ? JSON.parse(saved) : INITIAL_CREATORS;
   });
 
   const [campaigns, setCampaigns] = useState(() => {
-    const saved = localStorage.getItem('cp_campaigns');
+    const saved = localStorage.getItem('cp_campaigns_v3');
     return saved ? JSON.parse(saved) : INITIAL_CAMPAIGNS;
   });
 
   const [collaborationRequests, setCollaborationRequests] = useState(() => {
-    const saved = localStorage.getItem('cp_requests');
+    const saved = localStorage.getItem('cp_requests_v3');
     return saved ? JSON.parse(saved) : INITIAL_COLLABORATION_REQUESTS;
   });
 
   const [projects, setProjects] = useState(() => {
-    const saved = localStorage.getItem('cp_projects');
+    const saved = localStorage.getItem('cp_projects_v3');
     return saved ? JSON.parse(saved) : INITIAL_PROJECTS;
   });
 
   const [conversations, setConversations] = useState(() => {
-    const saved = localStorage.getItem('cp_conversations');
+    const saved = localStorage.getItem('cp_conversations_v3');
     return saved ? JSON.parse(saved) : INITIAL_CONVERSATIONS;
   });
 
   const [evidenceRecords, setEvidenceRecords] = useState(() => {
-    const saved = localStorage.getItem('cp_evidence');
+    const saved = localStorage.getItem('cp_evidence_v3');
     return saved ? JSON.parse(saved) : INITIAL_EVIDENCE_RECORDS;
   });
 
   const [notifications, setNotifications] = useState(() => {
-    const saved = localStorage.getItem('cp_notifications');
+    const saved = localStorage.getItem('cp_notifications_v3');
     return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
   });
 
   const [brandProfile, setBrandProfile] = useState(() => {
-    const saved = localStorage.getItem('cp_brand_profile');
+    const saved = localStorage.getItem('cp_brand_profile_v3');
     return saved ? JSON.parse(saved) : INITIAL_BRAND_PROFILE;
   });
 
@@ -80,31 +80,31 @@ export const AppProvider = ({ children }) => {
 
   // Sync with localStorage
   useEffect(() => {
-    localStorage.setItem('cp_role', currentRole);
+    localStorage.setItem('cp_role_v3', currentRole);
   }, [currentRole]);
 
   useEffect(() => {
-    localStorage.setItem('cp_page', currentPage);
+    localStorage.setItem('cp_page_v3', currentPage);
   }, [currentPage]);
 
   useEffect(() => {
-    localStorage.setItem('cp_campaigns', JSON.stringify(campaigns));
+    localStorage.setItem('cp_campaigns_v3', JSON.stringify(campaigns));
   }, [campaigns]);
 
   useEffect(() => {
-    localStorage.setItem('cp_requests', JSON.stringify(collaborationRequests));
+    localStorage.setItem('cp_requests_v3', JSON.stringify(collaborationRequests));
   }, [collaborationRequests]);
 
   useEffect(() => {
-    localStorage.setItem('cp_projects', JSON.stringify(projects));
+    localStorage.setItem('cp_projects_v3', JSON.stringify(projects));
   }, [projects]);
 
   useEffect(() => {
-    localStorage.setItem('cp_conversations', JSON.stringify(conversations));
+    localStorage.setItem('cp_conversations_v3', JSON.stringify(conversations));
   }, [conversations]);
 
   useEffect(() => {
-    localStorage.setItem('cp_evidence', JSON.stringify(evidenceRecords));
+    localStorage.setItem('cp_evidence_v3', JSON.stringify(evidenceRecords));
   }, [evidenceRecords]);
 
   // Toast Dispatcher
@@ -136,7 +136,7 @@ export const AppProvider = ({ children }) => {
       'brand-notifications', 'brand-settings'
     ];
     const creatorPages = [
-      'creator-dashboard', 'creator-profile', 'portfolio-manager',
+      'creator-dashboard', 'creator-profile', 'my-creator-profile', 'portfolio-manager',
       'evidence-verification', 'available-campaigns', 'creator-campaign-detail',
       'submit-proposal', 'creator-requests', 'creator-projects',
       'creator-notifications', 'creator-settings', 'public-profile-preview'
@@ -181,15 +181,32 @@ export const AppProvider = ({ children }) => {
     });
   };
 
+  // Saved Opportunities (for Creators)
+  const [savedOpportunityIds, setSavedOpportunityIds] = useState(['camp-1', 'camp-2']);
+  const toggleSaveOpportunity = (campId) => {
+    setSavedOpportunityIds((prev) => {
+      const exists = prev.includes(campId);
+      const updated = exists ? prev.filter((id) => id !== campId) : [...prev, campId];
+      const camp = campaigns.find((c) => c.id === campId);
+      addToast({
+        title: exists ? 'Opportunity Removed' : 'Opportunity Saved!',
+        message: `${camp?.title || 'Campaign'} has been ${exists ? 'removed from' : 'saved to'} your tracked opportunities.`,
+        type: exists ? 'info' : 'success'
+      });
+      return updated;
+    });
+  };
+
   // Campaign Actions
   const addCampaign = (newCampaign) => {
+    const isDraft = newCampaign.status === 'Draft';
     const camp = {
       ...newCampaign,
       id: `camp-${Date.now()}`,
       brandId: 'brand-1',
       brandName: brandProfile.name,
       brandLogo: brandProfile.logo,
-      status: 'Active',
+      status: newCampaign.status || 'Active',
       createdAt: new Date().toISOString().split('T')[0],
       applicantsCount: 0,
       matchesCount: 8,
@@ -200,9 +217,11 @@ export const AppProvider = ({ children }) => {
     };
     setCampaigns((prev) => [camp, ...prev]);
     addToast({
-      title: 'Campaign Published Successfully!',
-      message: `"${camp.title}" is now live and accepting creator applications.`,
-      type: 'success'
+      title: isDraft ? 'Draft Brief Saved' : 'Campaign Published Successfully!',
+      message: isDraft
+        ? `"${camp.title}" has been saved to your draft briefs.`
+        : `"${camp.title}" is now live and accepting creator applications.`,
+      type: isDraft ? 'info' : 'success'
     });
     return camp.id;
   };
@@ -652,7 +671,20 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  // Notification read toggle
+  // Notification actions
+  const addNotification = (role, notif) => {
+    const newNotif = {
+      id: `notif-${Date.now()}`,
+      timestamp: 'Just now',
+      read: false,
+      ...notif
+    };
+    setNotifications((prev) => ({
+      ...prev,
+      [role]: [newNotif, ...(prev[role] || [])]
+    }));
+  };
+
   const markNotificationRead = (role, notifId) => {
     setNotifications((prev) => ({
       ...prev,
@@ -696,6 +728,7 @@ export const AppProvider = ({ children }) => {
         conversations,
         evidenceRecords,
         notifications,
+        addNotification,
         brandProfile,
         activeCreatorProfile,
         toasts,
@@ -715,6 +748,8 @@ export const AppProvider = ({ children }) => {
         submitEvidence,
         addPortfolioItem,
         deletePortfolioItem,
+        savedOpportunityIds,
+        toggleSaveOpportunity,
         updateBrandProfile,
         updateCreatorProfile,
         markNotificationRead,

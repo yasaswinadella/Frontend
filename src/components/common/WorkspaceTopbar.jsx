@@ -95,8 +95,10 @@ export const WorkspaceTopbar = ({ title, subtitle, actionButton, breadcrumbs = [
               borderRadius: 'var(--radius-full)',
               fontSize: '0.72rem',
               fontWeight: 600,
-              color: '#059669'
+              color: '#059669',
+              cursor: 'help'
             }}
+            title="Milestone Escrow Protection: Contract funds are locked in project escrow and released only upon explicit brand approval of verified deliverables."
           >
             <ShieldCheck size={13} color="#059669" />
             <span>Escrow Guaranteed</span>
